@@ -131,8 +131,14 @@ npm run dev        # http://localhost:5173
 
 Vite 已把 `/api` 代理到 `http://localhost:8000`（见 [vite.config.js](heritage-tourism/vite.config.js)），前后端分别起就能联调。
 
-> ⚠️ 仓库含演示视频、全景图和内容图片，合计约 437 MB，首次 clone 会很慢。只看代码可以浅克隆：
-> `git clone --depth 1 --filter=blob:none --no-checkout <repo> && cd <repo> && git sparse-checkout set '/*' '!heritage-tourism/src/assets/**' '!heritage-tourism/public/**' '!hesitage-backend/media/**' && git checkout main`
+> ⚠️ 仓库含演示视频、全景图和内容图片，合计约 400 MB，首次 clone 会很慢。只看代码可以浅克隆：
+>
+> ```bash
+> git clone --depth 1 --filter=blob:none --no-checkout <repo>
+> cd <repo>
+> git sparse-checkout set --no-cone '/*' '!heritage-tourism/src/assets/**' '!heritage-tourism/public/**' '!hesitage-backend/media/**'
+> git checkout main
+> ```
 
 ---
 

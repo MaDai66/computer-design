@@ -36,7 +36,7 @@ git clone <your-repo-url> .
 
 ```bash
 git clone --depth 1 --filter=blob:none --no-checkout <your-repo-url> .
-git sparse-checkout set '/*' '!heritage-tourism/src/assets/**' '!heritage-tourism/public/**' '!hesitage-backend/media/**'
+git sparse-checkout set --no-cone '/*' '!heritage-tourism/src/assets/**' '!heritage-tourism/public/**' '!hesitage-backend/media/**'
 git checkout main
 ```
 
