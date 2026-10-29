@@ -35,7 +35,7 @@
                 <span class="price">¥{{ room.price }}/晚</span>
                 <span class="capacity">{{ room.capacity }}</span>
               </div>
-              <button class="btn btn-secondary" @click="openRoomBookingModal(room.name, room.price)">预订</button>
+              <button class="btn btn-secondary" @click="openRoomBookingModal(room.name, room.price, room.id)">预订</button>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@
                 <span class="duration">时长：{{ experience.duration }}</span>
                 <span class="price">¥{{ experience.price }}/人</span>
               </div>
-              <button class="btn btn-secondary" @click="openExperienceBookingModal(experience.name, experience.price)">预约</button>
+              <button class="btn btn-secondary" @click="openExperienceBookingModal(experience.name, experience.price, experience.id)">预约</button>
             </div>
           </div>
         </div>
@@ -169,309 +169,196 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import axios from 'axios'
+import api from '@/api/axios'
 
 const router = useRouter()
 const route = useRoute()
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
-// 农家院数据
-const homestaysData = [
-  {
-    id: 1,
-    name: '长白山脚下农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20farmhouse%20at%20the%20foot%20of%20Changbai%20Mountain&image_size=landscape_16_9',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20farmhouse%20at%20the%20foot%20of%20Changbai%20Mountain&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Farmhouse%20interior%20traditional%20Chinese%20style&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Farmhouse%20garden%20with%20traditional%20Chinese%20elements&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Farmhouse%20dining%20area%20traditional%20Chinese%20cuisine&image_size=landscape_16_9'
-    ],
-    rating: 4.8,
-    location: '长白山景区附近',
-    distance: 5,
-    hasHeritage: true,
-    selfOperated: true,
-    hot: true,
-    description: '位于长白山脚下，环境优美，提供满族剪纸体验，正宗农家菜。',
-    price: 280,
-    rooms: [
-      {
-        name: '火炕房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20room%20with%20kang%20bed&image_size=portrait_4_3',
-        description: '传统火炕，可住2-4人，独立卫浴，空调，WiFi',
-        price: 280,
-        capacity: '2-4人'
-      },
-      {
-        name: '山景房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Deluxe%20traditional%20Chinese%20room%20mountain%20view&image_size=portrait_4_3',
-        description: '落地窗山景，可住2人，独立卫浴，空调，WiFi',
-        price: 320,
-        capacity: '2人'
-      },
-      {
-        name: '家庭房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Family%20room%20traditional%20Chinese%20style&image_size=portrait_4_3',
-        description: '宽敞空间，可住4-6人，独立卫浴，空调，WiFi',
-        price: 480,
-        capacity: '4-6人'
-      }
-    ],
-    experiences: [
-      {
-        name: '满族剪纸教学',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20workshop%20traditional%20craft&image_size=portrait_4_3',
-        description: '由当地非遗传承人教授满族传统剪纸技艺，可带走自己的作品。',
-        duration: '1.5小时',
-        price: 68
-      },
-      {
-        name: '满族火锅体验',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20hot%20pot%20traditional%20cuisine&image_size=portrait_4_3',
-        description: '品尝正宗满族火锅，了解满族饮食文化和传统烹饪方法。',
-        duration: '2小时',
-        price: 128
-      }
-    ],
-    reviews: [
-      {
-        user: '@旅行爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3',
-        rating: 5,
-        content: '农家院环境非常好，干净整洁，老板热情好客。火炕很舒服，晚上睡得很香。早餐是正宗的农家菜，味道很棒。离长白山景区很近，交通方便。强烈推荐！',
-        date: '2026-04-10'
-      },
-      {
-        user: '@家庭出游',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3',
-        rating: 5,
-        content: '带家人来长白山旅游，选择了这家农家院。房间宽敞，设施齐全，孩子们很喜欢火炕。老板还安排了满族剪纸体验，非常有特色。下次来还会住这里。',
-        date: '2026-04-08'
-      },
-      {
-        user: '@摄影爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3',
-        rating: 5,
-        content: '农家院的位置绝佳，是拍摄长白山的好地方。房间干净舒适，老板很热情，给我们推荐了很多拍摄点。晚上在院子里还能看到星空，非常美丽。',
-        date: '2026-04-05'
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: '松花湖生态农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Eco%20farmhouse%20by%20Songhua%20Lake&image_size=landscape_16_9',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Eco%20farmhouse%20by%20Songhua%20Lake&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Lake%20view%20farmhouse%20interior&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Eco%20garden%20at%20farmhouse&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20seafood%20dining%20at%20farmhouse&image_size=landscape_16_9'
-    ],
-    rating: 4.6,
-    location: '松花湖景区',
-    distance: 10,
-    hasHeritage: true,
-    selfOperated: true,
-    hot: false,
-    description: '松花湖边的生态农家院，提供传统渔业体验，湖景房。',
-    price: 320,
-    rooms: [
-      {
-        name: '湖景房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Lake%20view%20room%20traditional%20style&image_size=portrait_4_3',
-        description: '落地窗湖景，可住2-3人，独立卫浴，空调，WiFi',
-        price: 320,
-        capacity: '2-3人'
-      },
-      {
-        name: '家庭湖景房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Family%20lake%20view%20room&image_size=portrait_4_3',
-        description: '宽敞湖景，可住4-5人，独立卫浴，空调，WiFi',
-        price: 450,
-        capacity: '4-5人'
-      }
-    ],
-    experiences: [
-      {
-        name: '传统渔业体验',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20fishing%20experience%20on%20lake&image_size=portrait_4_3',
-        description: '跟随当地渔民学习传统捕鱼技艺，体验撒网、收网的乐趣。',
-        duration: '2小时',
-        price: 88
-      },
-      {
-        name: '湖鲜烹饪体验',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20fish%20cooking%20class&image_size=portrait_4_3',
-        description: '使用刚捕获的湖鲜，学习制作正宗的松花湖鱼宴。',
-        duration: '1.5小时',
-        price: 108
-      }
-    ],
-    reviews: [
-      {
-        user: '@自然爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%204&image_size=portrait_4_3',
-        rating: 5,
-        content: '农家院环境非常生态，周围都是绿色植物，空气清新。房间宽敞明亮，湖景房的视野非常好。老板很热情，给我们安排了捕鱼体验，非常有趣。',
-        date: '2026-04-12'
-      },
-      {
-        user: '@美食家',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%205&image_size=portrait_4_3',
-        rating: 4,
-        content: '湖鲜非常新鲜，味道很棒。房间干净整洁，设施齐全。唯一的不足是离市区有点远，但环境确实很好，适合度假。',
-        date: '2026-04-09'
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: '朝鲜族民俗村农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20ethnic%20village%20traditional%20farmhouse%20with%20hanok%20style%20architecture&image_size=landscape_16_9',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20ethnic%20village%20traditional%20farmhouse%20with%20hanok%20style%20architecture&image_size=landscape_16_9'
-    ],
-    rating: 4.9,
-    location: '朝鲜族民俗村',
-    distance: 15,
-    hasHeritage: true,
-    selfOperated: true,
-    hot: true,
-    description: '朝鲜族特色农家院，提供打糕制作、朝鲜服装体验，正宗朝鲜美食。',
-    price: 260,
-    rooms: [
-      {
-        name: '韩式火炕房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20style%20ondol%20room&image_size=portrait_4_3',
-        description: '传统韩式火炕，可住2-4人，独立卫浴，空调，WiFi',
-        price: 260,
-        capacity: '2-4人'
-      },
-      {
-        name: '韩式客房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20style%20guest%20room&image_size=portrait_4_3',
-        description: '韩式风格客房，可住2人，独立卫浴，空调，WiFi',
-        price: 280,
-        capacity: '2人'
-      }
-    ],
-    experiences: [
-      {
-        name: '打糕制作体验',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20rice%20cake%20making%20workshop&image_size=portrait_4_3',
-        description: '学习制作正宗朝鲜族打糕，体验传统捣糕工艺。',
-        duration: '1小时',
-        price: 58
-      },
-      {
-        name: '朝鲜服装体验',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20traditional%20clothing%20experience&image_size=portrait_4_3',
-        description: '穿上正宗朝鲜服装，在民俗村拍照留念。',
-        duration: '1.5小时',
-        price: 68
-      },
-      {
-        name: '朝鲜美食制作',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20cuisine%20cooking%20class&image_size=portrait_4_3',
-        description: '学习制作正宗朝鲜泡菜、烤肉等传统美食。',
-        duration: '2小时',
-        price: 98
-      }
-    ],
-    reviews: [
-      {
-        user: '@文化爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%206&image_size=portrait_4_3',
-        rating: 5,
-        content: '非常有特色的朝鲜族农家院，老板是朝鲜族，非常热情。打糕制作体验很有趣，味道也很棒。房间干净整洁，朝鲜风格很地道。强烈推荐！',
-        date: '2026-04-11'
-      },
-      {
-        user: '@摄影爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%207&image_size=portrait_4_3',
-        rating: 5,
-        content: '民俗村的环境非常适合拍照，穿上朝鲜服装拍出来的照片非常漂亮。农家院的饭菜很正宗，尤其是泡菜和烤肉。房间舒适，服务周到。',
-        date: '2026-04-07'
-      },
-      {
-        user: '@家庭出游',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%208&image_size=portrait_4_3',
-        rating: 5,
-        content: '孩子们非常喜欢打糕制作和朝鲜服装体验，玩得很开心。农家院的环境干净整洁，饭菜味道好。老板很热情，还给我们讲了很多朝鲜族的文化和历史。',
-        date: '2026-04-04'
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: '查干湖冬捕农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20traditional%20farmhouse%20with%20ice%20fishing%20scene&image_size=landscape_16_9',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20traditional%20farmhouse%20with%20ice%20fishing%20scene&image_size=landscape_16_9'
-    ],
-    rating: 4.7,
-    location: '查干湖景区',
-    distance: 20,
-    hasHeritage: true,
-    selfOperated: true,
-    hot: true,
-    description: '查干湖边的农家院，冬季提供冬捕体验，特色鱼宴。',
-    price: 300,
-    rooms: [
-      {
-        name: '暖炕房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Warm%20kang%20room%20in%20winter&image_size=portrait_4_3',
-        description: '传统暖炕，可住2-4人，独立卫浴，暖气，WiFi',
-        price: 300,
-        capacity: '2-4人'
-      },
-      {
-        name: '豪华暖炕房',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Deluxe%20warm%20room%20winter&image_size=portrait_4_3',
-        description: '宽敞暖炕，可住4-6人，独立卫浴，暖气，WiFi',
-        price: 420,
-        capacity: '4-6人'
-      }
-    ],
-    experiences: [
-      {
-        name: '冬捕体验',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20traditional%20winter%20fishing%20on%20frozen%20lake%20with%20fishermen&image_size=portrait_4_3',
-        description: '参与查干湖传统冬捕，体验冰上捕鱼的乐趣。',
-        duration: '3小时',
-        price: 168
-      },
-      {
-        name: '鱼宴品尝',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20fish%20feast%20traditional%20style%20Chagan%20Lake&image_size=portrait_4_3',
-        description: '品尝查干湖特色鱼宴，包括多种做法的鲜鱼。',
-        duration: '2小时',
-        price: 138
-      }
-    ],
-    reviews: [
-      {
-        user: '@冬季旅游爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%209&image_size=portrait_4_3',
-        rating: 5,
-        content: '冬捕体验非常棒，第一次在冰面上捕鱼，非常新鲜刺激。农家院的暖炕很舒服，晚上睡在上面很暖和。鱼宴的味道非常鲜美，推荐大家来体验。',
-        date: '2026-03-28'
-      },
-      {
-        user: '@美食爱好者',
-        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%2010&image_size=portrait_4_3',
-        rating: 4,
-        content: '鱼宴非常美味，特别是查干湖的胖头鱼，肉质鲜嫩。冬捕体验很有趣，但需要注意保暖。农家院的环境干净整洁，服务周到。',
-        date: '2026-03-25'
-      }
-    ]
-  }
-]
+// 加载状态
+const loading = ref(true)
+const error = ref('')
+
+// 当前农家院数据
+const currentHomestayData = ref({
+  id: 1,
+  name: '长白山脚下农家院',
+  image: '/image/HomestayDetail/changbaishan_farmhouse_1.jpeg',
+  images: [
+    '/image/HomestayDetail/changbaishan_farmhouse_1.jpeg',
+    '/image/HomestayDetail/changbaishan_farmhouse_2.jpeg',
+    '/image/HomestayDetail/changbaishan_farmhouse_3.jpeg',
+    '/image/HomestayDetail/changbaishan_farmhouse_4.jpeg'
+  ],
+  rating: 4.8,
+  location: '长白山景区附近',
+  distance: 5,
+  hasHeritage: true,
+  selfOperated: true,
+  hot: true,
+  description: '位于长白山脚下，环境优美，提供满族剪纸体验，正宗农家菜。',
+  price: 280,
+  rooms: [
+    {
+      name: '火炕房',
+      image: '/image/HomestayDetail/room_kang.jpeg',
+      description: '传统火炕，可住2-4人，独立卫浴，空调，WiFi',
+      price: 280,
+      capacity: '2-4人'
+    },
+    {
+      name: '山景房',
+      image: '/image/HomestayDetail/room_mountain.jpeg',
+      description: '落地窗山景，可住2人，独立卫浴，空调，WiFi',
+      price: 320,
+      capacity: '2人'
+    },
+    {
+      name: '家庭房',
+      image: '/image/HomestayDetail/room_family.jpeg',
+      description: '宽敞空间，可住4-6人，独立卫浴，空调，WiFi',
+      price: 480,
+      capacity: '4-6人'
+    }
+  ],
+  experiences: [
+    {
+      name: '满族剪纸教学',
+      image: '/image/HomestayDetail/exp_papercutting.jpeg',
+      description: '由当地非遗传承人教授满族传统剪纸技艺，可带走自己的作品。',
+      duration: '1.5小时',
+      price: 68
+    },
+    {
+      name: '满族火锅体验',
+      image: '/image/HomestayDetail/exp_hotpot.jpeg',
+      description: '品尝正宗满族火锅，了解满族饮食文化和传统烹饪方法。',
+      duration: '2小时',
+      price: 128
+    }
+  ],
+  reviews: [
+    {
+      user: '@旅行爱好者',
+      avatar: '/image/HomestayDetail/avatar_1.jpeg',
+      rating: 5,
+      content: '农家院环境非常好，干净整洁，老板热情好客。火炕很舒服，晚上睡得很香。早餐是正宗的农家菜，味道很棒。离长白山景区很近，交通方便。强烈推荐！',
+      date: '2026-04-10'
+    },
+    {
+      user: '@家庭出游',
+      avatar: '/image/HomestayDetail/avatar_2.jpeg',
+      rating: 5,
+      content: '带家人来长白山旅游，选择了这家农家院。房间宽敞，设施齐全，孩子们很喜欢火炕。老板还安排了满族剪纸体验，非常有特色。下次来还会住这里。',
+      date: '2026-04-08'
+    },
+    {
+      user: '@摄影爱好者',
+      avatar: '/image/HomestayDetail/avatar_3.jpeg',
+      rating: 5,
+      content: '农家院的位置绝佳，是拍摄长白山的好地方。房间干净舒适，老板很热情，给我们推荐了很多拍摄点。晚上在院子里还能看到星空，非常美丽。',
+      date: '2026-04-05'
+    }
+  ]
+})
+
+// 获取图片URL
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return '/image/HomestayDetail/default.jpg'
+  if (imagePath.startsWith('http')) return imagePath
+  if (imagePath.startsWith('/media')) return apiBaseUrl + imagePath
+  if (imagePath.startsWith('/image')) return imagePath
+  return apiBaseUrl + imagePath
+}
 
 // 获取当前农家院详情
 const currentHomestay = computed(() => {
-  const id = parseInt(route.params.id) || 1
-  return homestaysData.find(homestay => homestay.id === id) || homestaysData[0]
+  const data = currentHomestayData.value
+  const processedImages = data.images && data.images.length > 0 
+    ? data.images.map(img => getImageUrl(img))
+    : [getImageUrl(data.image)]
+  return {
+    ...data,
+    image: getImageUrl(data.image),
+    images: processedImages,
+    rooms: data.rooms.map(room => ({
+      ...room,
+      image: getImageUrl(room.image)
+    })),
+    experiences: data.experiences.map(exp => ({
+      ...exp,
+      image: getImageUrl(exp.image)
+    })),
+    reviews: data.reviews.map(review => ({
+      ...review,
+      avatar: getImageUrl(review.avatar)
+    }))
+  }
 })
+
+// 获取农家院数据
+const fetchHomestay = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const id = parseInt(route.params.id) || 1
+    const response = await axios.get(`${apiBaseUrl}/api/homestay/${id}/`)
+    const data = response.data
+    
+    const roomsResponse = await axios.get(`${apiBaseUrl}/api/homestay/rooms/?homestay=${id}`)
+    const rooms = roomsResponse.data.results || roomsResponse.data || []
+    
+    const experiencesResponse = await axios.get(`${apiBaseUrl}/api/homestay/experiences/?homestay=${id}`)
+    const experiences = experiencesResponse.data.results || experiencesResponse.data || []
+    
+    const reviewsResponse = await axios.get(`${apiBaseUrl}/api/homestay/reviews/?homestay=${id}`)
+    const reviews = reviewsResponse.data.results || reviewsResponse.data || []
+    
+    currentHomestayData.value = {
+      id: data.id,
+      name: data.name || '',
+      image: data.image || '',
+      images: data.images || [],
+      rating: parseFloat(data.rating) || 0,
+      location: data.location || '',
+      distance: data.distance || 0,
+      hasHeritage: data.has_heritage || false,
+      selfOperated: data.self_operated || false,
+      hot: data.hot || false,
+      description: data.description || '',
+      price: parseFloat(data.price) || 0,
+      rooms: rooms.map(room => ({
+        id: room.id || null,
+        name: room.name || '',
+        image: room.image || '',
+        description: room.description || '',
+        price: parseFloat(room.price) || 0,
+        capacity: room.capacity || ''
+      })),
+      experiences: experiences.map(exp => ({
+        id: exp.id || null,
+        name: exp.name || '',
+        image: exp.image || '',
+        description: exp.description || '',
+        duration: exp.duration || '',
+        price: parseFloat(exp.price) || 0
+      })),
+      reviews: reviews.map(review => ({
+        user: review.user_name || '',
+        avatar: review.avatar || '',
+        rating: review.rating || 5,
+        content: review.content || '',
+        date: review.date ? new Date(review.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+      }))
+    }
+  } catch (err) {
+    console.error('获取农家院详情失败:', err)
+    error.value = '获取农家院详情失败，使用本地数据'
+  } finally {
+    loading.value = false
+  }
+}
 
 const showBackToTop = ref(false)
 
@@ -479,6 +366,7 @@ const showBackToTop = ref(false)
 const showRoomBookingModal = ref(false)
 const selectedRoom = ref('')
 const selectedRoomPrice = ref(0)
+const selectedRoomId = ref(null)
 const roomBooking = ref({
   checkIn: '',
   checkOut: '',
@@ -492,6 +380,7 @@ const roomBooking = ref({
 const showExperienceBookingModal = ref(false)
 const selectedExperience = ref('')
 const selectedExperiencePrice = ref(0)
+const selectedExperienceId = ref(null)
 const experienceBooking = ref({
   date: '',
   time: '09:00-10:30',
@@ -502,92 +391,178 @@ const experienceBooking = ref({
 })
 
 // 打开房间预订模态框
-const openRoomBookingModal = (room, price) => {
+const openRoomBookingModal = (room, price, roomId = null) => {
   selectedRoom.value = room
   selectedRoomPrice.value = price
+  selectedRoomId.value = roomId
   showRoomBookingModal.value = true
 }
 
 // 打开体验预约模态框
-const openExperienceBookingModal = (experience, price) => {
+const openExperienceBookingModal = (experience, price, experienceId = null) => {
   selectedExperience.value = experience
   selectedExperiencePrice.value = price
+  selectedExperienceId.value = experienceId
   showExperienceBookingModal.value = true
 }
 
-// 提交房间预订
-const submitRoomBooking = () => {
-  // 计算入住天数
-  const checkInDate = new Date(roomBooking.value.checkIn)
-  const checkOutDate = new Date(roomBooking.value.checkOut)
-  const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
-  
-  // 计算总价
-  const totalPrice = selectedRoomPrice.value * days
-  
-  // 生成订单ID
-  const orderId = 'ORD' + Date.now()
-  
-  // 创建订单对象
-  const order = {
-    id: orderId,
-    type: 'room',
-    item: selectedRoom.value,
-    price: selectedRoomPrice.value,
-    totalPrice: totalPrice,
-    checkIn: roomBooking.value.checkIn,
-    checkOut: roomBooking.value.checkOut,
-    guests: roomBooking.value.guests,
-    name: roomBooking.value.name,
-    phone: roomBooking.value.phone,
-    notes: roomBooking.value.notes,
-    status: 'pending',
-    createdAt: new Date().toISOString()
+// 提交房间预订到后端
+const submitRoomBooking = async () => {
+  // 检查登录状态
+  let user = null
+  try { user = JSON.parse(localStorage.getItem('user')) } catch (e) {}
+  if (!user || !user.id) {
+    alert('请先登录')
+    router.push('/login')
+    return
   }
   
-  // 保存订单到localStorage
-  saveOrder(order)
+  if (!roomBooking.value.name || !roomBooking.value.phone) {
+    alert('请填写姓名和手机号码')
+    return
+  }
   
-  // 关闭模态框
-  showRoomBookingModal.value = false
+  if (!roomBooking.value.checkIn || !roomBooking.value.checkOut) {
+    alert('请选择入住和退房日期')
+    return
+  }
   
-  // 跳转到我的页面
-  router.push('/profile')
+  try {
+    const homestayId = parseInt(route.params.id) || 1
+    const checkInDate = new Date(roomBooking.value.checkIn)
+    const checkOutDate = new Date(roomBooking.value.checkOut)
+    const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
+    
+    console.log('=== 房间预订信息 ===')
+    console.log('homestayId:', homestayId)
+    console.log('roomBooking:', roomBooking.value)
+    console.log('selectedRoom:', selectedRoom.value)
+    console.log('nights:', nights)
+    
+    const orderData = {
+      homestay_id: homestayId,
+      room_id: selectedRoomId.value,
+      check_in: roomBooking.value.checkIn,
+      check_out: roomBooking.value.checkOut,
+      guests: roomBooking.value.guests || 1,
+      contact_name: roomBooking.value.name,
+      contact_phone: roomBooking.value.phone,
+      notes: roomBooking.value.notes,
+      user_id: user.id
+    }
+
+    console.log('发送的订单数据:', orderData)
+
+    // 调用后端API创建民宿订单
+    const response = await api.post('/orders/create_homestay_order/', orderData)
+    
+    console.log('订单创建成功，响应:', response)
+    alert('预订成功！')
+    
+    // 关闭模态框
+    showRoomBookingModal.value = false
+    
+    // 跳转到我的页面
+    router.push('/profile')
+    
+  } catch (error) {
+    console.error('=== 提交预订异常 ===')
+    console.error('错误对象:', error)
+    console.error('响应数据:', JSON.stringify(error.response?.data, null, 2))
+    console.error('响应状态:', error.response?.status)
+
+    const errorData = error.response?.data
+    let errorMessage = ''
+    if (errorData) {
+      if (errorData.message) {
+        errorMessage = errorData.message
+      } else if (errorData.items && errorData.items.length > 0) {
+        const itemErrors = errorData.items[0]
+        errorMessage = Object.entries(itemErrors).map(([k, v]) => `${k}: ${v}`).join('; ')
+      } else {
+        errorMessage = JSON.stringify(errorData)
+      }
+    }
+    alert('预订失败: ' + (errorMessage || error.message || '服务器错误'))
+  }
 }
 
-// 提交体验预约
-const submitExperienceBooking = () => {
-  // 计算总价
-  const totalPrice = selectedExperiencePrice.value * experienceBooking.value.participants
-  
-  // 生成订单ID
-  const orderId = 'ORD' + Date.now()
-  
-  // 创建订单对象
-  const order = {
-    id: orderId,
-    type: 'experience',
-    item: selectedExperience.value,
-    price: selectedExperiencePrice.value,
-    totalPrice: totalPrice,
-    date: experienceBooking.value.date,
-    time: experienceBooking.value.time,
-    participants: experienceBooking.value.participants,
-    name: experienceBooking.value.name,
-    phone: experienceBooking.value.phone,
-    notes: experienceBooking.value.notes,
-    status: 'pending',
-    createdAt: new Date().toISOString()
+// 提交体验预约到后端
+const submitExperienceBooking = async () => {
+  // 检查登录状态
+  let user = null
+  try { user = JSON.parse(localStorage.getItem('user')) } catch (e) {}
+  if (!user || !user.id) {
+    alert('请先登录')
+    router.push('/login')
+    return
   }
   
-  // 保存订单到localStorage
-  saveOrder(order)
+  if (!experienceBooking.value.name || !experienceBooking.value.phone) {
+    alert('请填写姓名和手机号码')
+    return
+  }
   
-  // 关闭模态框
-  showExperienceBookingModal.value = false
+  if (!experienceBooking.value.date) {
+    alert('请选择预约日期')
+    return
+  }
   
-  // 跳转到我的页面
-  router.push('/profile')
+  try {
+    const homestayId = parseInt(route.params.id) || 1
+    
+    console.log('=== 体验预约信息 ===')
+    console.log('homestayId:', homestayId)
+    console.log('experienceBooking:', experienceBooking.value)
+    console.log('selectedExperience:', selectedExperience.value)
+    console.log('selectedExperienceId:', selectedExperienceId.value)
+    
+    const orderData = {
+      homestay_id: homestayId,
+      experience_id: selectedExperienceId.value,
+      date: experienceBooking.value.date,
+      time: experienceBooking.value.time,
+      participants: experienceBooking.value.participants || 1,
+      contact_name: experienceBooking.value.name,
+      contact_phone: experienceBooking.value.phone,
+      notes: experienceBooking.value.notes,
+      user_id: user.id
+    }
+
+    console.log('发送的订单数据:', orderData)
+
+    // 调用后端API创建体验订单
+    const response = await api.post('/orders/create_experience_order/', orderData)
+    
+    console.log('订单创建成功，响应:', response)
+    alert('预约成功！')
+    
+    // 关闭模态框
+    showExperienceBookingModal.value = false
+    
+    // 跳转到我的页面
+    router.push('/profile')
+    
+  } catch (error) {
+    console.error('=== 提交预约异常 ===')
+    console.error('错误对象:', error)
+    console.error('响应数据:', JSON.stringify(error.response?.data, null, 2))
+    console.error('响应状态:', error.response?.status)
+
+    const errorData = error.response?.data
+    let errorMessage = ''
+    if (errorData) {
+      if (errorData.message) {
+        errorMessage = errorData.message
+      } else if (errorData.items && errorData.items.length > 0) {
+        const itemErrors = errorData.items[0]
+        errorMessage = Object.entries(itemErrors).map(([k, v]) => `${k}: ${v}`).join('; ')
+      } else {
+        errorMessage = JSON.stringify(errorData)
+      }
+    }
+    alert('预约失败: ' + (errorMessage || error.message || '服务器错误'))
+  }
 }
 
 // 保存订单到localStorage
@@ -611,6 +586,8 @@ const handleScroll = () => {
 onMounted(() => {
   // 监听滚动事件
   window.addEventListener('scroll', handleScroll)
+  // 获取农家院数据
+  fetchHomestay()
 })
 
 onUnmounted(() => {

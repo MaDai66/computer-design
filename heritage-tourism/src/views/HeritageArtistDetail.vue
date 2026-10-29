@@ -150,22 +150,22 @@ const artistsData = [
     awardsCount: 12,
     studentsCount: 56,
     story: '王阿姨出生在长白山脚下的满族家庭，从小跟随祖母学习剪纸技艺。她的作品融合了满族传统图案与现代元素，多次在国内外展览中获奖。近年来，她致力于传承这门技艺，开设了多期剪纸培训班，培养了众多年轻传承人。她的作品被多个博物馆收藏，成为吉林非物质文化遗产的重要代表。',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Chinese%20woman%20paper%20cutting%20artist&image_size=portrait_4_3',
+    image: '/image/HeritageArtistDetail/9e8485af5e3ffa2b5423a01f973be93c (1).jpeg',
     works: [
       {
         name: '满族吉祥图案',
         description: '融合满族传统吉祥纹样，寓意幸福安康',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20lucky%20patterns&image_size=portrait_4_3'
+        image: '/image/HeritageArtistDetail/4767d3b83a64b584aed445c0d57958c6.jpeg'
       },
       {
         name: '长白山风光',
         description: '展现长白山壮丽景色的剪纸作品',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Paper%20cutting%20of%20Changbai%20Mountain%20landscape&image_size=portrait_4_3'
+        image: '/image/HeritageArtistDetail/3bae17c5d3586731df15554a7ef668f8.jpeg'
       },
       {
         name: '满族民俗',
         description: '反映满族传统民俗活动的剪纸作品',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Paper%20cutting%20of%20Manchu%20folk%20customs&image_size=portrait_4_3'
+        image: '/image/HeritageArtistDetail/e3331d7de6473a804f441c229391a43b.jpeg'
       }
     ],
     activities: [
@@ -188,7 +188,7 @@ const artistsData = [
     videos: [
       {
         title: '满族剪纸艺术教程',
-        thumbnail: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Paper%20cutting%20tutorial%20video%20thumbnail&image_size=portrait_4_3',
+        thumbnail: '/image/HeritageArtistDetail/10dbea63503c386f9199d5f416958a4c.jpeg',
         duration: '05:23',
         views: '12.5万',
         likes: '3.2万',
@@ -205,22 +205,22 @@ const artistsData = [
     awardsCount: 8,
     studentsCount: 32,
     story: '金师傅是朝鲜族打糕制作技艺的代表性传承人，从小跟随父亲学习打糕制作。他坚持使用传统工艺，选用优质糯米，经过浸泡、蒸煮、捶打等多道工序，制作出的打糕口感细腻、香甜可口。金师傅不仅在国内传承技艺，还曾到韩国进行文化交流，为促进中韩文化交流做出了贡献。',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20elderly%20man%20making%20rice%20cake&image_size=portrait_4_3',
+    image: '/image/HeritageArtistDetail/d12541d119557602dc0ae3d38ac85c83.jpeg',
     works: [
       {
         name: '传统打糕',
         description: '采用传统工艺制作的经典打糕',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Korean%20rice%20cake&image_size=portrait_4_3'
+        image: '/image/HeritageArtistDetail/95e32a266f181b468a2b9c2a657e21a0.jpeg'
       },
       {
         name: '红豆打糕',
         description: '加入红豆馅的特色打糕',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Red%20bean%20rice%20cake&image_size=portrait_4_3'
+        image: '/image/HeritageArtistDetail/b71cbbbe7f99f67073bddffd85f7a13e.jpeg'
       },
       {
         name: '芝麻打糕',
         description: '撒有芝麻的香甜打糕',
-        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Sesame%20rice%20cake&image_size=portrait_4_3'
+        image: '/image/HeritageArtistDetail/d2803ab5907dff497031d0c5c26b8dca.jpeg'
       }
     ],
     activities: [
@@ -243,7 +243,7 @@ const artistsData = [
     videos: [
       {
         title: '朝鲜族打糕制作过程',
-        thumbnail: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Rice%20cake%20making%20process%20video%20thumbnail&image_size=portrait_4_3',
+        thumbnail: '/image/HeritageArtistDetail/4a7ea9a34f51e8e369faafba911ec467.jpeg',
         duration: '08:45',
         views: '8.9万',
         likes: '2.5万',
@@ -260,7 +260,7 @@ const artistsData = [
     awardsCount: 15,
     studentsCount: 28,
     story: '张师傅是查干湖冬捕技艺的代表性传承人，从小跟随父亲学习冬捕技艺。他熟悉查干湖的水域情况，掌握了传统的冬捕方法，包括选网、凿冰、下网、拉网等工序。张师傅不仅传承了冬捕技艺，还致力于保护查干湖的生态环境，确保冬捕活动的可持续发展。他的冬捕团队曾多次创造冬捕丰收纪录，成为查干湖冬捕文化的重要象征。',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Chinese%20man%20winter%20fishing%20guide&image_size=portrait_4_3',
+    image: '/image/HeritageArtistDetail/bf52353b03672ad83d478e101cbb9431.jpeg',
     works: [
       {
         name: '冬捕仪式',
@@ -298,7 +298,7 @@ const artistsData = [
     videos: [
       {
         title: '查干湖冬捕纪实',
-        thumbnail: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Winter%20fishing%20documentary%20video%20thumbnail&image_size=portrait_4_3',
+        thumbnail: '/image/HeritageArtistDetail/2b1baa74497114699eae7fa6184bffa0.jpeg',
         duration: '12:30',
         views: '15.6万',
         likes: '4.8万',
@@ -315,7 +315,7 @@ const artistsData = [
     awardsCount: 6,
     studentsCount: 18,
     story: '李师傅是松花湖传统渔业技艺的代表性传承人，从小在松花湖边长大，熟悉湖水的变化和鱼类的习性。他掌握了传统的捕鱼方法，包括撒网、钓鱼、放笼等多种技艺。李师傅不仅传承了传统渔业技艺，还致力于保护松花湖的生态环境，推广可持续的渔业 practices。他经常向年轻一代传授渔业知识，确保这门技艺得以传承。',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Middle-aged%20Chinese%20man%20traditional%20fisherman&image_size=portrait_4_3',
+    image: '/image/HeritageArtistDetail/84a2da87c260b8e53d050442739112a6.jpeg',
     works: [
       {
         name: '传统渔网',
@@ -353,7 +353,7 @@ const artistsData = [
     videos: [
       {
         title: '松花湖传统渔业文化',
-        thumbnail: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20fishing%20culture%20video%20thumbnail&image_size=portrait_4_3',
+        thumbnail: '/image/HeritageArtistDetail/3ed4ad90193d4db53256926c4c262529.jpeg',
         duration: '06:15',
         views: '6.7万',
         likes: '1.9万',

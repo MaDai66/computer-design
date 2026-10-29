@@ -149,25 +149,25 @@ const workshops = {
     description: '满族剪纸是中国传统民间艺术之一，具有悠久的历史和独特的艺术风格。本工坊展示了满族剪纸的制作过程，包括设计、裁剪、染色等工序。',
     artistName: '王阿姨',
     artistDesc: '从事剪纸艺术30余年，作品多次获奖，是满族剪纸的代表性传承人。',
-    artistImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Chinese%20woman%20paper%20cutting%20artist&image_size=portrait_4_3',
+    artistImage: '/image/CloudWorkshop/9e8485af5e3ffa2b5423a01f973be93c.jpeg',
     panoramaImage: '/panorama/jianzhi.png',
-    audioFile: '/peiying/jianzhi.mp3'
+    audioFile: '/src/assets/peiying/jianzhi.mp3'
   },
   'paper-cutting-extended': {
     name: '满族剪纸工坊 - 延伸场景',
     description: '满族剪纸工坊的延伸场景，展示了更多剪纸作品和制作工具，让您更深入了解满族剪纸的魅力。',
     artistName: '王阿姨',
     artistDesc: '从事剪纸艺术30余年，作品多次获奖，是满族剪纸的代表性传承人。',
-    artistImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Chinese%20woman%20paper%20cutting%20artist&image_size=portrait_4_3',
+    artistImage: '/image/CloudWorkshop/9e8485af5e3ffa2b5423a01f973be93c.jpeg',
     panoramaImage: '/panorama/jianzhi-jixu.png',
-    audioFile: '/peiying/jianzhi.mp3'
+    audioFile: '/src/assets/peiying/jianzhi.mp3'
   },
   'inkstone': {
     name: '松花砚雕刻工坊',
     description: '松花砚是吉林特产，以其石质细腻、温润如玉而闻名。本工坊展示了松花砚的雕刻技艺，从选石到雕刻完成的全过程。',
     artistName: '李师傅',
     artistDesc: '松花砚雕刻技艺传承人，从事砚台雕刻20余年，作品远销国内外。',
-    artistImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Middle-aged%20Chinese%20man%20inkstone%20carver&image_size=portrait_4_3',
+    artistImage: '/image/CloudWorkshop/u=3173126211,3170237592&fm=253&fmt=auto&app=138&f=JPEG.webp',
     panoramaImage: '/panorama/diaoke.png',
     audioFile: '/src/assets/peiying/songhuayan.mp3'
   },
@@ -176,7 +176,7 @@ const workshops = {
     description: '朝鲜族打糕是吉林延边地区的传统美食，以其软糯香甜而受到喜爱。本工坊展示了打糕的传统制作工艺。',
     artistName: '金师傅',
     artistDesc: '朝鲜族传统打糕技艺传承人，制作打糕40余年，坚持传统工艺。',
-    artistImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20elderly%20man%20making%20rice%20cake&image_size=portrait_4_3',
+    artistImage: '/image/CloudWorkshop/d12541d119557602dc0ae3d38ac85c83.jpeg',
     panoramaImage: '/panorama/dagao.png',
     audioFile: '/src/assets/peiying/dagao.mp3'
   }
@@ -918,6 +918,13 @@ const closePuzzleGame = () => {
 
 // 模拟360°全景加载
 onMounted(() => {
+  // 检查URL参数中的workshop参数
+  const urlParams = new URLSearchParams(window.location.search)
+  const workshopParam = urlParams.get('workshop')
+  if (workshopParam && workshops[workshopParam]) {
+    selectedWorkshop.value = workshopParam
+  }
+  
   // 初始化 Pannellum 全景
   initPannellum()
   // 初始化音频
@@ -1279,9 +1286,7 @@ onUnmounted(() => {
 }
 
 /* 预览热点样式 */
-.preview-hotspot {
-  /* Pannellum热点样式 */
-}
+
 
 /* 自定义热点按钮样式 */
 .pnlm-hotspot.preview-hotspot {

@@ -1,5 +1,5 @@
 <template>
-  <div class="heritage">
+  <div class="heritage" :style="{ '--bg-image': `url(${backgroundImage})` }">
     <!-- 页面标题 -->
     <section class="page-header">
       <div class="container">
@@ -117,6 +117,7 @@ import video4 from '@/assets/4.mp4'
 import nongleImage from '@/assets/农乐舞.jpg'
 import dongbuImage from '@/assets/冬捕.jpg'
 import papercuttingImage from '@/assets/剪纸.jpg'
+import backgroundImage from '@/assets/beijing.png'
 
 const router = useRouter()
 const showBackToTop = ref(false)
@@ -187,28 +188,28 @@ const artists = [
     name: '王阿姨',
     skill: '长白山满族剪纸',
     description: '从事剪纸艺术30余年，作品多次获奖',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Chinese%20woman%20paper%20cutting%20artist&image_size=portrait_4_3'
+    image: '/image/Heritage/9e8485af5e3ffa2b5423a01f973be93c.jpeg'
   },
   {
     id: 2,
     name: '金师傅',
     skill: '朝鲜族打糕制作',
     description: '朝鲜族传统打糕技艺传承人',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20elderly%20man%20making%20rice%20cake&image_size=portrait_4_3'
+    image: '/image/Heritage/d12541d119557602dc0ae3d38ac85c83.jpeg'
   },
   {
     id: 3,
     name: '张师傅',
     skill: '查干湖冬捕',
     description: '冬捕技艺传承人，有着丰富的冬捕经验',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Chinese%20man%20winter%20fishing%20guide&image_size=portrait_4_3'
+    image: '/image/Heritage/bf52353b03672ad83d478e101cbb9431.jpeg'
   },
   {
     id: 4,
     name: '李师傅',
     skill: '松花湖传统渔业',
     description: '传统渔业技艺传承人，熟悉松花湖水域',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Middle-aged%20Chinese%20man%20traditional%20fisherman&image_size=portrait_4_3'
+    image: '/image/Heritage/84a2da87c260b8e53d050442739112a6.jpeg'
   }
 ]
 
@@ -268,6 +269,38 @@ onUnmounted(() => {
 
 <style scoped>
 /* Page Header */
+.heritage {
+  position: relative;
+  min-height: 100vh;
+}
+
+.heritage::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+  z-index: -1;
+  animation: slideInFromLeft 1.5s ease-out;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.3;
+  }
+}
+
 .page-header {
   background-color: var(--primary-color);
   color: var(--white);
@@ -292,7 +325,6 @@ onUnmounted(() => {
 /* Heritage Artists */
 .heritage-artists {
   padding: 64px 0;
-  background-color: var(--bg-color);
 }
 
 .heritage-artists h2 {
@@ -352,7 +384,6 @@ onUnmounted(() => {
 /* VR/AR Experience */
 .vr-ar-experience {
   padding: 64px 0;
-  background-color: var(--white);
 }
 
 .vr-ar-experience h2 {
@@ -402,7 +433,6 @@ onUnmounted(() => {
 /* Heritage Videos */
 .heritage-videos {
   padding: 64px 0;
-  background-color: var(--white);
 }
 
 .heritage-videos h2 {

@@ -54,7 +54,7 @@
             <h3>图像识别AR</h3>
             <p>扫描下方图片，体验AR效果</p>
             <div class="recognition-image">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20pattern%20AR%20recognition&image_size=square" alt="满族剪纸纹样" />
+              <img src="/image/ARInteraction/u=1972520531,2881980914&fm=253&app=138&f=JPEG.jpg" alt="满族剪纸纹样" />
               <div class="image-overlay">
                 <span class="scan-hint">请用手机扫描此图</span>
               </div>
@@ -80,7 +80,7 @@
             <h3>空间AR</h3>
             <p>将非遗模型放置在现实空间中</p>
             <div class="space-ar-preview">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=AR%20inkstone%20in%20real%20space&image_size=landscape_16_9" alt="空间AR预览" />
+              <img src="/image/ARInteraction/u=886318379,1956622001&fm=253&app=138&f=PNG.png" alt="空间AR预览" />
             </div>
             <button class="start-ar-btn" @click="startSpaceAR">开始空间AR</button>
             <div class="ar-features">

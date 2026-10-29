@@ -1,5 +1,5 @@
 <template>
-  <div class="gifts">
+  <div class="gifts" :style="{ '--bg-image': `url(${backgroundImage})` }">
     <!-- 页面标题 -->
     <section class="page-header">
       <div class="container">
@@ -20,8 +20,27 @@
       </div>
     </section>
 
+    <!-- 加载状态 -->
+    <section v-if="loading" class="products-section">
+      <div class="container">
+        <div class="loading-state">
+          <p>加载中...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 错误状态 -->
+    <section v-else-if="error" class="products-section">
+      <div class="container">
+        <div class="error-state">
+          <p>{{ error }}</p>
+          <button class="btn btn-secondary" @click="fetchProducts">重新加载</button>
+        </div>
+      </div>
+    </section>
+
     <!-- 商品网格 -->
-    <section class="products-section">
+    <section v-else class="products-section">
       <div class="container">
         <div class="products-grid">
           <div class="product-card" v-for="product in filteredProducts" :key="product.id" @click="viewProductDetail(product)" style="cursor: pointer;">
@@ -55,10 +74,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { productAPI } from '@/api/products'
+import backgroundImage from '@/assets/beijing.png'
 
 const router = useRouter()
 const showBackToTop = ref(false)
 const activeCategory = ref('非遗手作')
+const products = ref([])
+const loading = ref(false)
+const error = ref('')
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 const scrollToTop = () => {
   window.scrollTo({
@@ -71,6 +96,59 @@ const handleScroll = () => {
   showBackToTop.value = window.scrollY > 300
 }
 
+// 获取图片URL（处理相对路径）
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return '/image/Gifts/default.jpg'
+  if (imagePath.startsWith('http')) return imagePath
+  if (imagePath.startsWith('/media')) return apiBaseUrl + imagePath
+  if (imagePath.startsWith('/image')) return imagePath
+  return apiBaseUrl + imagePath
+}
+
+// 获取产品列表
+const fetchProducts = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await productAPI.getProductList()
+    products.value = response.results || response || []
+    // 处理图片路径和字段映射
+    products.value = products.value.map(product => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      image: getImageUrl(product.image),
+      price: parseFloat(product.price),
+      originalPrice: product.original_price ? parseFloat(product.original_price) : null,
+      discount: product.discount,
+      sales: product.sales_count || 0,
+      assist: (product.tags && product.tags.includes('助农')) || false,
+      category: mapCategory(product.category),
+      rating: product.rating,
+      reviewCount: product.review_count,
+      origin: product.origin,
+      stock: product.stock
+    }))
+  } catch (err) {
+    console.error('获取产品列表失败:', err)
+    error.value = '获取产品列表失败，请稍后重试'
+  } finally {
+    loading.value = false
+  }
+}
+
+// 分类映射函数
+const mapCategory = (dbCategory) => {
+  const categoryMap = {
+    
+    '生鲜水产': '地道农产',
+    '新鲜果蔬': '地道农产',
+    '文创礼品': '文创礼盒',
+    '工艺品': '非遗手作'
+  }
+  return categoryMap[dbCategory] || dbCategory
+}
+
 // 切换分类
 const switchCategory = (category) => {
   activeCategory.value = category
@@ -79,38 +157,36 @@ const switchCategory = (category) => {
 // 过滤后的商品
 const filteredProducts = computed(() => {
   if (activeCategory.value === '助农专区') {
-    return products.filter(product => product.assist)
+    return products.value.filter(product => product.assist)
   }
-  return products.filter(product => product.category === activeCategory.value)
+  return products.value.filter(product => product.category === activeCategory.value)
 })
 
 // 跳转到商品详情页面
 const viewProductDetail = (product) => {
-  // 根据商品名称跳转到对应的详情页面
+  const id = product.id
   if (product.name.includes('人参')) {
-    router.push('/ginseng-product-detail')
+    router.push(`/ginseng-product-detail/${id}`)
   } else if (product.name.includes('玉米')) {
-    router.push('/corn-product-detail')
+    router.push(`/corn-product-detail/${id}`)
   } else if (product.name.includes('蜂蜜')) {
-    router.push('/honey-product-detail')
+    router.push(`/honey-product-detail/${id}`)
   } else if (product.name.includes('泡菜')) {
-    router.push('/kimchi-product-detail')
-
+    router.push(`/kimchi-product-detail/${id}`)
   } else if (product.name.includes('打糕')) {
-    router.push('/korean-rice-cake-product-detail')
+    router.push(`/korean-rice-cake-product-detail/${id}`)
   } else if (product.name.includes('有机鱼')) {
-    router.push('/chagan-lake-fish-product-detail')
+    router.push(`/chagan-lake-fish-product-detail/${id}`)
   } else if (product.name.includes('咸鸭蛋')) {
-    router.push('/songhua-lake-egg-product-detail')
+    router.push(`/songhua-lake-egg-product-detail/${id}`)
   } else if (product.name.includes('文创礼盒')) {
-    router.push('/cultural-gift-box-product-detail')
+    router.push(`/cultural-gift-box-product-detail/${id}`)
   } else if (product.name.includes('冬捕纪念套装')) {
-    router.push('/winter-fishing-souvenir-product-detail')
+    router.push(`/winter-fishing-souvenir-product-detail/${id}`)
   } else if (product.name.includes('风光摄影集')) {
-    router.push('/scenery-photography-product-detail')
+    router.push(`/scenery-photography-product-detail/${id}`)
   } else {
-    // 默认跳转到通用商品详情页面
-    router.push('/product-detail')
+    router.push(`/product-detail/${id}`)
   }
 }
 
@@ -119,134 +195,11 @@ const bookProduct = (product) => {
   viewProductDetail(product)
 }
 
-const products = [
-  {
-    id: 1,
-    name: '满族剪纸艺术套装',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20art%20traditional%20craft%20Jilin&image_size=portrait_4_3',
-    price: 128,
-    originalPrice: 168,
-    discount: 24,
-    sales: 1280,
-    assist: false,
-    category: '非遗手作'
-  },
-  {
-    id: 2,
-    name: '长白山野生人参',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20wild%20ginseng%20Jilin%20natural%20herb%20traditional%20medicine&image_size=landscape_16_9',
-    price: 298,
-    originalPrice: 398,
-    discount: 25,
-    sales: 890,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 3,
-    name: '朝鲜族传统打糕',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20traditional%20rice%20cake%20rice%20dough&image_size=landscape_16_9',
-    price: 45,
-    originalPrice: null,
-    discount: null,
-    sales: 2350,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 4,
-    name: '查干湖有机鱼',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20organic%20fish%20fresh%20water&image_size=landscape_16_9',
-    price: 168,
-    originalPrice: 198,
-    discount: 15,
-    sales: 1560,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 5,
-    name: '松花湖咸鸭蛋',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Salted%20duck%20eggs%20traditional%20Chinese%20food&image_size=landscape_16_9',
-    price: 68,
-    originalPrice: 88,
-    discount: 23,
-    sales: 1890,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 6,
-    name: '吉林玉米糁',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20organic%20corn%20agricultural%20products&image_size=landscape_16_9',
-    price: 39.9,
-    originalPrice: null,
-    discount: null,
-    sales: 3200,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 7,
-    name: '长白山蜂蜜',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20natural%20honey%20Jilin%20agricultural%20product&image_size=landscape_16_9',
-    price: 88,
-    originalPrice: 118,
-    discount: 25,
-    sales: 2100,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 8,
-    name: '朝鲜族泡菜',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20traditional%20kimchi%20Jilin%20fermented%20food&image_size=landscape_16_9',
-    price: 58,
-    originalPrice: 68,
-    discount: 15,
-    sales: 1950,
-    assist: true,
-    category: '地道农产'
-  },
-  {
-    id: 9,
-    name: '吉林长白山旅游文创礼盒',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20cultural%20creative%20gift%20box%20Changbai%20Mountain&image_size=landscape_16_9',
-    price: 268,
-    originalPrice: 328,
-    discount: 18,
-    sales: 780,
-    assist: false,
-    category: '文创礼盒'
-  },
-
-  {
-    id: 11,
-    name: '查干湖冬捕纪念套装',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20souvenir%20set%20with%20traditional%20fishing%20tools%20and%20cultural%20elements&image_size=landscape_16_9',
-    price: 198,
-    originalPrice: 258,
-    discount: 23,
-    sales: 620,
-    assist: true,
-    category: '文创礼盒'
-  },
-  {
-    id: 12,
-    name: '松花湖风光摄影集',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Songhua%20Lake%20landscape%20photography%20album&image_size=landscape_16_9',
-    price: 128,
-    originalPrice: 168,
-    discount: 24,
-    sales: 450,
-    assist: false,
-    category: '文创礼盒'
-  }
-]
-
 onMounted(() => {
   // 监听滚动事件
   window.addEventListener('scroll', handleScroll)
+  // 获取产品列表
+  fetchProducts()
 })
 
 onUnmounted(() => {
@@ -256,6 +209,60 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Gifts Container */
+.gifts {
+  position: relative;
+  min-height: 100vh;
+}
+
+.gifts::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+  z-index: -1;
+  animation: slideInFromLeft 1.5s ease-out;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.3;
+  }
+}
+
+/* Loading & Error States */
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 64px 24px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.loading-state p,
+.error-state p {
+  font-size: 16px;
+  color: var(--text-medium);
+  margin-bottom: 16px;
+}
+
+.error-state p {
+  color: var(--orange);
+}
+
 /* Page Header */
 .page-header {
   background-color: var(--primary-color);
@@ -329,7 +336,6 @@ onUnmounted(() => {
 /* Products Section */
 .products-section {
   padding: 64px 0;
-  background-color: var(--bg-color);
 }
 
 .products-grid {

@@ -32,12 +32,12 @@
         </div>
         <div class="activity-images">
           <div class="main-image">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20ceremony%20traditional%20ritual&image_size=landscape_16_9" alt="查干湖冬捕开网仪式" />
+            <img src="/image/ChaganLakeOpeningCeremony/5a5701a8aa8d5e21e73b1b2391f1ea28.jpeg" alt="查干湖冬捕开网仪式" />
           </div>
           <div class="gallery">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20net%20pulling&image_size=portrait_4_3" alt="查干湖冬捕拉网" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20priest%20ceremony&image_size=portrait_4_3" alt="查干湖冬捕祭祀仪式" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20fish%20from%20Chagan%20Lake&image_size=portrait_4_3" alt="查干湖鲜鱼" />
+            <img src="/image/ChaganLakeOpeningCeremony/8efea36a0e7a2985dbe449f10f612318.jpeg" alt="查干湖冬捕拉网" />
+            <img src="/image/ChaganLakeOpeningCeremony/a8991b81a8646d94ce2065c55b28197b.jpeg" alt="查干湖冬捕祭祀仪式" />
+            <img src="/image/ChaganLakeOpeningCeremony/7cb99e2d0662a0949666edb779281368.jpeg" alt="查干湖鲜鱼" />
             <img :src="chaganhu1" alt="查干湖冬景" />
           </div>
         </div>
@@ -167,7 +167,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/UserAvatar/1.jpg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@旅行爱好者</span>
                   <span class="review-date">2026-01-15</span>
@@ -180,15 +180,15 @@
             <div class="review-content">
               <p>查干湖冬捕开网仪式太震撼了！祭湖醒网仪式充满了神秘的萨满文化色彩，非常有特色。冬捕过程也很壮观，看到那么多鱼被拉上来，非常激动。鲜鱼品尝环节也很棒，刚捕捞的鱼非常新鲜，味道鲜美。活动组织得很有序，导游讲解也很专业。非常推荐！</p>
               <div class="review-images">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20ceremony&image_size=portrait_4_3" alt="冬捕仪式" />
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20fish%20from%20Chagan%20Lake&image_size=portrait_4_3" alt="鲜鱼" />
+                <img src="/image/ChaganLakeOpeningCeremony/ac2bfa5d470f7c93799f1706c1eec9f7.jpeg" alt="冬捕仪式" />
+                <img src="/image/ChaganLakeOpeningCeremony/7cb99e2d0662a0949666edb779281368.jpeg" alt="鲜鱼" />
               </div>
             </div>
           </div>
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/UserAvatar/2.jpg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@摄影爱好者</span>
                   <span class="review-date">2026-01-10</span>
@@ -205,7 +205,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/UserAvatar/3.jpg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@家庭出游</span>
                   <span class="review-date">2025-12-25</span>

@@ -1,16 +1,10 @@
 import api from './axios'
 
 export const activityAPI = {
-  // 获取活动列表
-  getActivityList: () => {
-    return api.get('/activities/')
-  },
-  // 获取活动详情
-  getActivityDetail: (id) => {
-    return api.get(`/activities/${id}/`)
-  },
-  // 获取即将开始的活动
-  getUpcomingActivities: () => {
-    return api.get('/activities/upcoming/')
-  }
+  getActivityList: (params = {}) => api.get('/activities/', { params }),
+  getActivityDetail: (id) => api.get(`/activities/${id}/`),
+  createActivity: (data) => api.post('/activities/', data),
+  updateActivity: (id, data) => api.put(`/activities/${id}/`, data),
+  deleteActivity: (id) => api.delete(`/activities/${id}/`),
+  getUpcomingActivities: (params = {}) => api.get('/activities/', { params })
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="homestay">
+  <div class="homestay" :style="{ '--bg-image': `url(${backgroundImage})` }">
     <!-- 页面标题 -->
     <section class="page-header">
       <div class="container">
@@ -43,29 +43,21 @@
               </div>
             </div>
             
-            <!-- 非遗体验 -->
+            <!-- 特色标签 -->
             <div class="filter-group">
-              <h4>非遗体验</h4>
+              <h4>特色标签</h4>
               <div class="filter-options">
                 <label class="filter-option">
-                  <input type="checkbox" v-model="filters.experiences.riceCake" />
-                  <span>打糕制作</span>
+                  <input type="checkbox" v-model="filters.tags.hasHeritage" />
+                  <span>非遗体验</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" v-model="filters.experiences.paperCutting" />
-                  <span>剪纸</span>
+                  <input type="checkbox" v-model="filters.tags.selfOperated" />
+                  <span>农家自营</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" v-model="filters.experiences.fishSkin" />
-                  <span>鱼皮画</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" v-model="filters.experiences.fishing" />
-                  <span>传统渔业</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" v-model="filters.experiences.winterFishing" />
-                  <span>冬捕体验</span>
+                  <input type="checkbox" v-model="filters.tags.hot" />
+                  <span>热销</span>
                 </label>
               </div>
             </div>
@@ -166,9 +158,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import backgroundImage from '@/assets/beijing.png'
 
 const router = useRouter()
 const showBackToTop = ref(false)
+const loading = ref(false)
+const error = ref('')
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 // 筛选条件
 const filters = ref({
@@ -179,12 +176,10 @@ const filters = ref({
     korean: false,
     other: false
   },
-  experiences: {
-    riceCake: false,
-    paperCutting: false,
-    fishSkin: false,
-    fishing: false,
-    winterFishing: false
+  tags: {
+    hasHeritage: false,
+    selfOperated: false,
+    hot: false
   },
   facilities: {
     kang: false,
@@ -205,7 +200,7 @@ const originalHomestays = ref([
   {
     id: 1,
     name: '长白山脚下农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20farmhouse%20at%20the%20foot%20of%20Changbai%20Mountain&image_size=landscape_16_9',
+    image: '/image/Homestay/372127531b22cf3b11b561b712ab9aae.jpeg',
     rating: 4.8,
     location: '长白山景区附近',
     distance: 5,
@@ -221,7 +216,7 @@ const originalHomestays = ref([
   {
     id: 2,
     name: '松花湖生态农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Eco%20farmhouse%20by%20Songhua%20Lake&image_size=landscape_16_9',
+    image: '/image/Homestay/5e722f3174856920f5a95763187cfabe.jpeg',
     rating: 4.6,
     location: '松花湖景区',
     distance: 10,
@@ -237,7 +232,7 @@ const originalHomestays = ref([
   {
     id: 3,
     name: '朝鲜族民俗村农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20ethnic%20village%20farmhouse&image_size=landscape_16_9',
+    image: '/image/Homestay/fb02a59c68ee0050700468e4f137cc0d.jpeg',
     rating: 4.9,
     location: '朝鲜族民俗村',
     distance: 15,
@@ -253,7 +248,7 @@ const originalHomestays = ref([
   {
     id: 4,
     name: '查干湖冬捕农家院',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Winter%20fishing%20farmhouse%20at%20Chagan%20Lake&image_size=landscape_16_9',
+    image: '/image/Homestay/87d003eb75a414662e86f3c2231ba9b4.jpeg',
     rating: 4.7,
     location: '查干湖景区',
     distance: 20,
@@ -271,6 +266,50 @@ const originalHomestays = ref([
 // 过滤后的农家院数据
 const homestays = ref([...originalHomestays.value])
 
+// 获取图片URL
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return '/image/Homestay/default.jpg'
+  if (imagePath.startsWith('http')) return imagePath
+  if (imagePath.startsWith('/media')) return apiBaseUrl + imagePath
+  if (imagePath.startsWith('/image')) return imagePath
+  return apiBaseUrl + imagePath
+}
+
+// 获取农家院数据
+const fetchHomestays = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await axios.get(`${apiBaseUrl}/api/homestay/`)
+    const data = response.data.results || response.data || []
+    
+    if (data.length > 0) {
+      originalHomestays.value = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        image: getImageUrl(item.image),
+        rating: parseFloat(item.rating) || 0,
+        location: item.location || '',
+        distance: item.distance || 0,
+        hasHeritage: item.has_heritage || false,
+        selfOperated: item.self_operated || false,
+        hot: item.hot || false,
+        description: item.description || '',
+        price: parseFloat(item.price) || 0,
+        area: item.area || 'other',
+        experiences: item.experiences || [],
+        facilities: item.facilities || []
+      }))
+      homestays.value = [...originalHomestays.value]
+    }
+  } catch (err) {
+    console.error('获取农家院数据失败:', err)
+    error.value = '获取农家院数据失败，使用本地数据'
+  } finally {
+    loading.value = false
+  }
+}
+
 // 应用筛选
 const applyFilters = () => {
   let filtered = [...originalHomestays.value]
@@ -284,15 +323,20 @@ const applyFilters = () => {
     filtered = filtered.filter(homestay => selectedAreas.includes(homestay.area))
   }
   
-  // 按非遗体验筛选
-  const selectedExperiences = Object.entries(filters.value.experiences)
+  // 按特色标签筛选
+  const selectedTags = Object.entries(filters.value.tags)
     .filter(([_, value]) => value)
     .map(([key]) => key)
   
-  if (selectedExperiences.length > 0) {
-    filtered = filtered.filter(homestay => 
-      selectedExperiences.some(exp => homestay.experiences.includes(exp))
-    )
+  if (selectedTags.length > 0) {
+    filtered = filtered.filter(homestay => {
+      return selectedTags.every(tag => {
+        if (tag === 'hasHeritage') return homestay.hasHeritage
+        if (tag === 'selfOperated') return homestay.selfOperated
+        if (tag === 'hot') return homestay.hot
+        return true
+      })
+    })
   }
   
   // 按设施筛选
@@ -327,29 +371,29 @@ const applyFilters = () => {
   
   // 确保至少显示一个农家院，如果筛选结果为空，显示所有农家院
   if (filtered.length === 0) {
-    // 尝试减少筛选条件，找到至少一个匹配的农家院
     let fallbackFiltered = [...originalHomestays.value]
     
-    // 只按区域筛选
     if (selectedAreas.length > 0) {
       fallbackFiltered = fallbackFiltered.filter(homestay => selectedAreas.includes(homestay.area))
     }
     
-    // 如果还是空，只按非遗体验筛选
-    if (fallbackFiltered.length === 0 && selectedExperiences.length > 0) {
-      fallbackFiltered = originalHomestays.value.filter(homestay => 
-        selectedExperiences.some(exp => homestay.experiences.includes(exp))
-      )
+    if (fallbackFiltered.length === 0 && selectedTags.length > 0) {
+      fallbackFiltered = originalHomestays.value.filter(homestay => {
+        return selectedTags.some(tag => {
+          if (tag === 'hasHeritage') return homestay.hasHeritage
+          if (tag === 'selfOperated') return homestay.selfOperated
+          if (tag === 'hot') return homestay.hot
+          return true
+        })
+      })
     }
     
-    // 如果还是空，只按设施筛选
     if (fallbackFiltered.length === 0 && selectedFacilities.length > 0) {
       fallbackFiltered = originalHomestays.value.filter(homestay => 
         selectedFacilities.every(facility => homestay.facilities.includes(facility))
       )
     }
     
-    // 如果还是空，只按评分筛选
     if (fallbackFiltered.length === 0 && selectedRatings.length > 0) {
       fallbackFiltered = originalHomestays.value.filter(homestay => {
         if (selectedRatings.includes('fourPointFive')) {
@@ -363,7 +407,6 @@ const applyFilters = () => {
       })
     }
     
-    // 如果还是空，显示所有农家院
     if (fallbackFiltered.length === 0) {
       fallbackFiltered = [...originalHomestays.value]
     }
@@ -410,6 +453,8 @@ const viewHomestayDetail = (homestayId) => {
 onMounted(() => {
   // 监听滚动事件
   window.addEventListener('scroll', handleScroll)
+  // 获取农家院数据
+  fetchHomestays()
 })
 
 onUnmounted(() => {
@@ -419,6 +464,39 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Homestay Container */
+.homestay {
+  position: relative;
+  min-height: 100vh;
+}
+
+.homestay::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+  z-index: -1;
+  animation: slideInFromLeft 1.5s ease-out;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.3;
+  }
+}
+
 /* Page Header */
 .page-header {
   background-color: var(--primary-color);
@@ -442,7 +520,6 @@ onUnmounted(() => {
 /* Content Section */
 .content-section {
   padding: 64px 0;
-  background-color: var(--bg-color);
 }
 
 .homestay-content {

@@ -1,0 +1,19 @@
+[Unit]
+Description=Heritage Backend Service
+After=network.target
+After=mysql.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/var/www/heritage/hesitage-backend
+Environment=PATH=/var/www/heritage/hesitage-backend/venv/bin
+ExecStart=/var/www/heritage/hesitage-backend/venv/bin/python manage.py runserver 0.0.0.0:8000
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

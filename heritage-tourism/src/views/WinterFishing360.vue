@@ -272,7 +272,7 @@ const initAudio = () => {
   }
   
   const audio = new Audio()
-  audio.src = '/peiying/songhuayan.mp3'
+  audio.src = '/src/assets/peiying/winter-fishing.mp3'
   audio.loop = true
   audio.volume = 0.5
   audioElement.value = audio

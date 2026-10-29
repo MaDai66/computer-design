@@ -20,7 +20,7 @@
           <h1>农家院住宿体验</h1>
           <div class="note-meta">
             <router-link to="/user/城市逃离者" class="author">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Travel%20blogger%20avatar%20profile%20picture%20rural%20escape&image_size=portrait_4_3" alt="城市逃离者" />
+              <img src="/image/HomestayExperienceNoteDetail/author_avatar.jpeg" alt="城市逃离者" />
               <span>@城市逃离者</span>
             </router-link>
             <span class="publish-date">2026-03-28</span>
@@ -34,7 +34,7 @@
         </div>
         <div class="note-content">
           <div class="note-cover">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20farmhouse%20homestay%20rural%20accommodation&image_size=landscape_16_9" alt="农家院住宿" />
+            <img src="/image/HomestayExperienceNoteDetail/cover.jpeg" alt="农家院住宿" />
           </div>
           <div class="note-text">
             <p>远离城市的喧嚣，来到宁静的乡村，体验农家院的生活，真的是一种非常惬意的享受！</p>
@@ -42,33 +42,33 @@
             <h3>农家院环境</h3>
             <p>我们入住的农家院位于长白山脚下，周围是一片绿色的田野和森林，环境非常优美。农家院的建筑是传统的东北民居风格，红墙绿瓦，非常有特色。院子里种满了各种蔬菜和果树，空气中弥漫着清新的泥土气息。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20farmhouse%20exterior&image_size=portrait_4_3" alt="农家院外观" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Farmhouse%20courtyard%20with%20vegetable%20garden&image_size=portrait_4_3" alt="农家院院子" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Rural%20landscape%20with%20farmhouse&image_size=portrait_4_3" alt="农家院周边环境" />
+              <img src="/image/HomestayExperienceNoteDetail/exterior.jpeg" alt="农家院外观" />
+              <img src="/image/HomestayExperienceNoteDetail/courtyard.jpeg" alt="农家院院子" />
+              <img src="/image/HomestayExperienceNoteDetail/landscape.jpeg" alt="农家院周边环境" />
             </div>
             
             <h3>房间设施</h3>
             <p>农家院的房间干净整洁，虽然没有城市酒店的豪华，但却充满了家的温馨。房间里有火炕，这是东北的特色，冬天睡在上面非常暖和。窗户很大，可以看到外面的田野和山脉，视野非常好。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Korean%20ondol%20room%20farmhouse&image_size=portrait_4_3" alt="火炕房间" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Farmhouse%20room%20interior%20simple%20cozy&image_size=portrait_4_3" alt="房间内部" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Farmhouse%20window%20view%20rural%20landscape&image_size=portrait_4_3" alt="房间窗外景色" />
+              <img src="/image/HomestayExperienceNoteDetail/room_kang.jpeg" alt="火炕房间" />
+              <img src="/image/HomestayExperienceNoteDetail/room_interior.jpeg" alt="房间内部" />
+              <img src="/image/HomestayExperienceNoteDetail/window_view.jpeg" alt="房间窗外景色" />
             </div>
             
             <h3>农家美食</h3>
             <p>农家院的饭菜非常美味，都是用当地的新鲜食材制作的。早餐有小米粥、咸鸭蛋、咸菜和馒头，非常地道。午餐和晚餐有各种东北特色菜，如炖鸡、红烧肉、酸菜白肉等，味道非常好。我们还自己采摘了院子里的蔬菜，让老板帮忙做，新鲜又美味。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20rural%20breakfast&image_size=portrait_4_3" alt="农家早餐" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chinese%20rural%20home%20cooking&image_size=portrait_4_3" alt="农家饭菜" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20vegetables%20from%20farm%20garden&image_size=portrait_4_3" alt="新鲜蔬菜" />
+              <img src="/image/HomestayExperienceNoteDetail/breakfast.jpeg" alt="农家早餐" />
+              <img src="/image/HomestayExperienceNoteDetail/lunch.jpeg" alt="农家饭菜" />
+              <img src="/image/HomestayExperienceNoteDetail/vegetables.jpeg" alt="新鲜蔬菜" />
             </div>
             
             <h3>乡村活动</h3>
             <p>在农家院的日子里，我们参加了各种乡村活动，如采摘蔬菜、喂鸡、钓鱼等。这些活动让我们感受到了乡村生活的乐趣，也让我们更加了解了农民的生活。晚上，我们在院子里生起了篝火，和老板一家一起聊天、唱歌，非常开心。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Tourist%20picking%20vegetables%20in%20farm%20garden&image_size=portrait_4_3" alt="采摘蔬菜" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fishing%20in%20rural%20pond&image_size=portrait_4_3" alt="钓鱼" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Bonfire%20night%20in%20rural%20farmhouse&image_size=portrait_4_3" alt="篝火晚会" />
+              <img src="/image/HomestayExperienceNoteDetail/picking.jpeg" alt="采摘蔬菜" />
+              <img src="/image/HomestayExperienceNoteDetail/fishing.jpeg" alt="钓鱼" />
+              <img src="/image/HomestayExperienceNoteDetail/bonfire.jpeg" alt="篝火晚会" />
             </div>
             
             <h3>当地文化</h3>
@@ -109,7 +109,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/HomestayExperienceNoteDetail/user_avatar_1.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@旅行爱好者</span>
                   <span class="comment-date">2026-03-29</span>
@@ -127,7 +127,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/HomestayExperienceNoteDetail/user_avatar_2.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@城市居民</span>
                   <span class="comment-date">2026-03-30</span>
@@ -145,7 +145,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/HomestayExperienceNoteDetail/user_avatar_3.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@美食达人</span>
                   <span class="comment-date">2026-04-01</span>

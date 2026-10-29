@@ -13,11 +13,11 @@
       <div class="container">
         <div class="user-card">
           <div class="user-avatar">
-            <img :src="user.avatar ? (user.avatar.startsWith('http') ? user.avatar : 'http://localhost:8000' + user.avatar) : 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20portrait&image_size=square'" alt="用户头像" />
+            <img :src="getAvatarUrl(user.avatar)" alt="用户头像" />
           </div>
           <div class="user-details">
             <div class="user-header">
-              <h3>{{ user.username || '未知旅行者' }}</h3>
+              <h3>{{ user.nickname || user.username || '未知旅行者' }}</h3>
               <button class="btn btn-secondary edit-profile-btn" @click="showEditProfileModal = true">编辑资料</button>
             </div>
             <p class="user-level">会员等级：非遗行者</p>
@@ -45,40 +45,63 @@
       <div class="container">
         <h2>我的订单</h2>
         <div class="order-tabs">
-          <button class="order-tab active">全部</button>
-          <button class="order-tab">待付款</button>
-          <button class="order-tab">待体验</button>
-          <button class="order-tab">待评价</button>
-          <button class="order-tab">售后</button>
+          <button 
+            class="order-tab" 
+            :class="{ active: activeOrderTab === 'all' }"
+            @click="switchOrderTab('all')"
+          >全部</button>
+          <button 
+            class="order-tab" 
+            :class="{ active: activeOrderTab === 'pending' }"
+            @click="switchOrderTab('pending')"
+          >待付款</button>
+          <button 
+            class="order-tab" 
+            :class="{ active: activeOrderTab === 'pending_experience' }"
+            @click="switchOrderTab('pending_experience')"
+          >待体验</button>
+          <button 
+            class="order-tab" 
+            :class="{ active: activeOrderTab === 'pending_review' }"
+            @click="switchOrderTab('pending_review')"
+          >待评价</button>
+          <button 
+            class="order-tab" 
+            :class="{ active: activeOrderTab === 'after_sale' }"
+            @click="switchOrderTab('after_sale')"
+          >售后</button>
         </div>
         <div class="order-list">
-          <div v-if="orders.length === 0" class="empty-orders">
+          <div v-if="filteredOrders.length === 0" class="empty-orders">
             <p>暂无订单</p>
             <router-link to="/" class="btn btn-primary">去浏览</router-link>
           </div>
-          <div v-else v-for="order in orders" :key="order.id" class="order-card">
+          <div v-else v-for="order in filteredOrders" :key="order.id" class="order-card">
             <div class="order-header">
               <span class="order-id">订单号：{{ order.id }}</span>
+              <span class="order-status" :class="order.status">{{ order.statusText }}</span>
             </div>
             <div class="order-content">
-              <img :src="getOrderImage(order.item)" :alt="order.item" />
+              <img :src="getOrderImage(order.item, order.image)" :alt="order.item" />
               <div class="order-info">
+                <div class="order-type">{{ order.typeText }}</div>
                 <h4>{{ order.item }}</h4>
                 <p class="order-date">
                   {{ order.checkIn ? `入住：${order.checkIn} 退房：${order.checkOut}` : 
                      order.date ? `预约：${order.date} ${order.time}` : 
                      order.spec ? `规格：${order.spec.type} - ${order.spec.theme}` : '' }}
                 </p>
+                <p v-if="order.createdAt" class="order-create-time">下单时间：{{ order.createdAt }}</p>
                 <div class="order-price">
-                  <span>{{ order.price }} × {{ order.quantity || order.guests || order.participants || 1 }}</span>
+                  <span>¥{{ order.price }} × {{ order.quantity || order.guests || order.participants || 1 }}</span>
                   <span class="total-price">¥{{ order.totalPrice }}</span>
                 </div>
               </div>
             </div>
             <div class="order-footer">
               <button class="btn btn-secondary">再次预订</button>
-              <button class="btn btn-primary">评价</button>
-              <button class="btn btn-danger" @click="confirmDeleteOrder(order.id)">删除</button>
+              <button class="btn btn-primary" :disabled="order.status === 'completed'">评价</button>
+              <button class="btn btn-danger" @click="confirmDeleteOrder(order.dbId || order.id)">删除</button>
             </div>
           </div>
         </div>
@@ -193,12 +216,12 @@
         <div class="modal-body">
           <form @submit.prevent="saveProfile">
             <div class="form-group">
-              <label for="edit-username">用户名</label>
-              <input type="text" id="edit-username" v-model="profileForm.username" placeholder="请输入用户名" required />
+              <label for="edit-nickname">昵称</label>
+              <input type="text" id="edit-nickname" v-model="profileForm.nickname" placeholder="请输入昵称" />
             </div>
             <div class="form-group">
               <label for="edit-email">邮箱</label>
-              <input type="email" id="edit-email" v-model="profileForm.email" placeholder="请输入邮箱" required />
+              <input type="email" id="edit-email" v-model="profileForm.email" placeholder="请输入邮箱" />
             </div>
             <div class="form-group">
               <label for="edit-phone">电话</label>
@@ -241,6 +264,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { userAPI } from '../api/users'
 import orderAPI from '../api/orders'
+import api from '../api/axios'
 
 const route = useRoute()
 
@@ -260,6 +284,7 @@ const postForm = ref({
 })
 const postToDelete = ref(null)
 const orderToDelete = ref(null)
+const activeOrderTab = ref('all')
 const user = ref({
   username: '',
   avatar: '',
@@ -268,33 +293,87 @@ const user = ref({
   bio: ''
 })
 const profileForm = ref({
-  username: '',
+  nickname: '',
   email: '',
   phone: '',
   bio: '',
   avatar: ''
 })
 const loading = ref(false)
+const originalUser = ref({}) // 保存打开模态框时的原始用户数据，用于比较变更
+
+// 切换订单标签
+const switchOrderTab = (tab) => {
+  activeOrderTab.value = tab
+}
+
+// 根据标签筛选订单
+const filteredOrders = computed(() => {
+  if (activeOrderTab.value === 'all') {
+    return orders.value
+  }
+  
+  const statusMap = {
+    'pending': ['pending'],           // 待付款
+    'pending_experience': ['confirmed'], // 待体验（已确认但未完成）
+    'pending_review': ['completed'],     // 待评价（已完成）
+    'after_sale': ['cancelled', 'refunded'] // 售后（已取消、已退款）
+  }
+  
+  const statuses = statusMap[activeOrderTab.value] || []
+  return orders.value.filter(order => statuses.includes(order.status))
+})
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+
+// 获取头像URL
+const getAvatarUrl = (avatar) => {
+  if (!avatar) {
+    return '/image/Profile/user_avatar_default.jpeg'
+  }
+  // 如果已经是完整URL，直接返回
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    return avatar
+  }
+  // 后端返回的头像路径可能是：
+  // - /media/avatars/xxx.jpg（完整相对路径）
+  // - media/avatars/xxx.jpg（没有开头斜杠）
+  // - avatars/xxx.jpg（只有文件名）
+  // 统一处理：移除可能的 /media/ 或 media/ 前缀，然后拼接完整URL
+  const cleanPath = avatar.replace(/^\/?media\//i, '')
+  return `${apiBaseUrl}/media/${cleanPath}`
+}
 
 // 根据订单item名称获取对应的图片URL
-const getOrderImage = (item) => {
-  console.log('获取订单图片:', item)
-  const imageMap = {
-    '满族剪纸艺术套装': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20art%20traditional%20craft%20Jilin&image_size=portrait_4_3',
-    '长白山天然蜂蜜': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20natural%20honey%20Jilin%20agricultural%20product&image_size=portrait_4_3',
-    '长白山蜂蜜': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20natural%20honey%20Jilin%20agricultural%20product&image_size=portrait_4_3',
-    '长白山野生人参': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20wild%20ginseng%20Jilin%20natural%20herb%20traditional%20medicine&image_size=portrait_4_3',
-    '朝鲜族传统打糕': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20traditional%20rice%20cake%20rice%20dough&image_size=portrait_4_3',
-    '查干湖有机鱼': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20organic%20fish%20fresh%20water&image_size=portrait_4_3',
-    '松花湖咸鸭蛋': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Salted%20duck%20eggs%20traditional%20Chinese%20food&image_size=portrait_4_3',
-    '吉林玉米糁': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20organic%20corn%20agricultural%20products&image_size=portrait_4_3',
-    '朝鲜族泡菜': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20traditional%20kimchi%20Jilin%20fermented%20food&image_size=portrait_4_3',
-    '吉林长白山旅游文创礼盒': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20cultural%20creative%20gift%20box%20Changbai%20Mountain&image_size=portrait_4_3',
-    '查干湖冬捕纪念套装': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20souvenir%20set&image_size=portrait_4_3',
-    '松花湖风光摄影集': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Songhua%20Lake%20landscape%20photography%20album&image_size=portrait_4_3',
-    '火炕房': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traditional%20Chinese%20room%20with%20kang%20bed&image_size=portrait_4_3'
+const getOrderImage = (item, imagePath) => {
+  console.log('获取订单图片:', item, imagePath)
+  // 优先使用后端返回的图片路径
+  if (imagePath && imagePath !== '') {
+    const fullPath = imagePath.startsWith('http') ? imagePath : apiBaseUrl + imagePath
+    return fullPath
   }
-  const imageUrl = imageMap[item] || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20heritage%20tourism%20order%20placeholder&image_size=portrait_4_3'
+  
+  // 本地映射表作为 fallback
+  const imageMap = {
+    '满族剪纸艺术套装': '/image/Profile/order_papercutting.jpeg',
+    '长白山天然蜂蜜': '/image/Profile/order_honey.jpeg',
+    '长白山蜂蜜': '/image/Profile/order_honey.jpeg',
+    '长白山野生人参': '/image/Profile/order_ginseng.jpeg',
+    '朝鲜族传统打糕': '/image/Profile/order_ricecake.jpeg',
+    '查干湖有机鱼': '/image/Profile/order_fish.jpeg',
+    '松花湖咸鸭蛋': '/image/Profile/order_eggs.jpeg',
+    '吉林玉米糁': '/image/Profile/order_corn.jpeg',
+    '朝鲜族泡菜': '/image/Profile/order_kimchi.jpeg',
+    '吉林长白山旅游文创礼盒': '/image/Profile/order_giftbox.jpeg',
+    '查干湖冬捕纪念套装': '/image/Profile/order_winterfishing.jpeg',
+    '松花湖风光摄影集': '/image/Profile/order_album.jpeg',
+    '火炕房': '/image/Profile/order_kang.jpeg',
+    '松花湖生态2日游': '/image/Profile/order_tour1.jpeg',
+    '长白山深度3日游': '/image/Profile/order_tour2.jpeg',
+    '高句丽古迹探秘': '/image/Profile/order_tour3.jpeg',
+    '查干湖冬捕之旅': '/image/Profile/order_tour4.jpeg'
+  }
+  const imageUrl = imageMap[item] || '/image/Profile/order_default.jpeg'
   console.log('图片URL:', imageUrl)
   return imageUrl
 }
@@ -303,76 +382,89 @@ const getOrderImage = (item) => {
 const loadOrders = async () => {
   try {
     // 检查用户是否登录
-    const user = JSON.parse(localStorage.getItem('user'))
-    if (!user) {
+    let user = null
+    try { user = JSON.parse(localStorage.getItem('user')) } catch (e) {}
+    if (!user || !user.id) {
       orders.value = []
       return
     }
-    
-    const response = await orderAPI.getOrders()
+
+    const response = await orderAPI.getMyOrders({ user_id: user.id })
     console.log('获取订单成功:', response)
-    // 直接使用返回的数据作为订单列表
-    if (Array.isArray(response)) {
-      orders.value = response
-      console.log('订单数据:', orders.value)
-      // 将后端返回的订单数据保存到localStorage作为备份
-      try {
-        localStorage.setItem('orders', JSON.stringify(response))
-      } catch (localStorageError) {
-        console.error('保存订单到localStorage失败:', localStorageError)
-      }
-    } else if (response.orders && Array.isArray(response.orders)) {
-      // 兼容response.orders结构
-      orders.value = response.orders
-      console.log('订单数据:', orders.value)
-      // 将后端返回的订单数据保存到localStorage作为备份
-      try {
-        localStorage.setItem('orders', JSON.stringify(response.orders))
-      } catch (localStorageError) {
-        console.error('保存订单到localStorage失败:', localStorageError)
-      }
-    } else if (response.results && Array.isArray(response.results)) {
-      // 兼容response.results结构（后端实际返回的结构）
-      // 转换字段名以匹配前端期望的结构
-      orders.value = response.results.map(order => ({
-        id: order.id,
-        item: order.item,
-        price: order.amount / (order.itemsCount || 1), // 计算单价
-        totalPrice: order.amount,
-        quantity: order.itemsCount,
-        status: order.status,
-        checkIn: order.checkIn,
-        checkOut: order.checkOut,
-        date: order.date,
-        time: order.time,
-        spec: order.spec
-      }))
-      console.log('订单数据:', orders.value)
-      // 将转换后的订单数据保存到localStorage作为备份
-      try {
-        localStorage.setItem('orders', JSON.stringify(orders.value))
-      } catch (localStorageError) {
-        console.error('保存订单到localStorage失败:', localStorageError)
-      }
-    } else {
-      orders.value = []
-      console.log('订单数据为空')
-      // 清空localStorage中的订单数据
-      try {
-        localStorage.removeItem('orders')
-      } catch (localStorageError) {
-        console.error('清空localStorage订单数据失败:', localStorageError)
-      }
+    
+    // 处理后端返回的订单数据
+    let orderList = []
+    
+    const statusMap = {
+      'pending': '待付款',
+      'paid': '已付款',
+      'confirmed': '已确认',
+      'completed': '已完成',
+      'cancelled': '已取消',
+      'refunded': '已退款'
     }
+    const typeMap = {
+      'tour': '旅游路线',
+      'homestay': '民宿预订',
+      'experience': '体验项目',
+      'product': '商品订单'
+    }
+    
+    let rawOrders = []
+    if (response.results && Array.isArray(response.results)) {
+      rawOrders = response.results
+    } else if (response.value && Array.isArray(response.value)) {
+      rawOrders = response.value
+    } else if (response.orders && Array.isArray(response.orders)) {
+      rawOrders = response.orders
+    } else if (Array.isArray(response)) {
+      rawOrders = response
+    }
+    
+    orderList = rawOrders.map(order => {
+      return {
+        id: order.order_id || order.id,
+        dbId: order.id,
+        item: order.first_item_name || order.item || '未知商品',
+        image: order.first_item_image || '',
+        price: parseFloat(order.total_price) || parseFloat(order.amount) || 0,
+        totalPrice: parseFloat(order.total_price) || parseFloat(order.amount) || 0,
+        quantity: order.guests || order.items_count || order.quantity || 1,
+        status: order.status,
+        statusText: statusMap[order.status] || order.status_display || order.status,
+        type: order.type,
+        typeText: typeMap[order.type] || order.type,
+        checkIn: order.check_in,
+        checkOut: order.check_out,
+        date: order.travel_date || order.date,
+        time: order.time || '',
+        spec: order.spec || null,
+        createdAt: order.created_at || order.createdAt
+      }
+    })
+    
+    orders.value = orderList
+    console.log('订单数据:', orders.value)
+    
+    // 将订单数据保存到localStorage作为备份
+    try {
+      localStorage.setItem('orders', JSON.stringify(orderList))
+    } catch (localStorageError) {
+      console.error('保存订单到localStorage失败:', localStorageError)
+    }
+    
   } catch (error) {
     console.error('Error loading orders:', error)
-    // 出错时清空订单数据，避免显示旧数据
-    orders.value = []
-    // 同时清空localStorage中的订单数据
+    // 出错时尝试从localStorage读取备份数据
     try {
-      localStorage.removeItem('orders')
+      const storedOrders = localStorage.getItem('orders')
+      if (storedOrders) {
+        orders.value = JSON.parse(storedOrders)
+      } else {
+        orders.value = []
+      }
     } catch (localStorageError) {
-      console.error('清空localStorage订单数据失败:', localStorageError)
+      orders.value = []
     }
   }
 }
@@ -390,7 +482,7 @@ const loadPosts = () => {
           id: 1,
           title: '长白山之旅',
           content: '太美了！长白山的雪景令人震撼，非遗体验也很有趣。',
-          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Traveler%20taking%20photo%20of%20Changbai%20Mountain%20Jilin%20scenery&image_size=portrait_4_3',
+          image: '/image/Profile/post_default.jpeg',
           likes: 128,
           comments: 32
         }
@@ -613,10 +705,18 @@ const loadUserInfo = async () => {
 
 // 打开编辑个人资料模态框
 const openEditProfileModal = () => {
-  // 复制用户信息到表单
+  // 头像用完整URL预览，但为空时不留占位（避免默认头像被误认为已有头像）
+  const avatarPreview = getAvatarUrl(user.value.avatar)
+  const isDefault = avatarPreview === '/image/Profile/user_avatar_default.jpeg'
   profileForm.value = {
-    ...user.value
+    nickname: user.value.nickname || '',
+    email: user.value.email || '',
+    phone: user.value.phone || '',
+    bio: user.value.bio || '',
+    avatar: isDefault ? '' : avatarPreview
   }
+  // 保存原始值，用于比较哪些字段发生了变化
+  originalUser.value = { ...profileForm.value }
   showEditProfileModal.value = true
 }
 
@@ -642,26 +742,61 @@ const removeAvatar = () => {
 const saveProfile = async () => {
   try {
     loading.value = true
+
+    const formData = new FormData()
+
+    // 从localStorage获取当前用户信息，用于传递user_id
+    let storedUser = null
+    try { storedUser = JSON.parse(localStorage.getItem('user')) } catch (e) {}
+    if (storedUser && storedUser.id) {
+      formData.append('user_id', storedUser.id)
+    }
+
+    // 只发送与原始值不同的字段（局部更新）
+    const textFields = ['nickname', 'email', 'phone', 'bio']
+    const original = originalUser.value || {}
+    textFields.forEach(field => {
+      const newVal = (profileForm.value[field] || '').trim()
+      const oldVal = (original[field] || '').trim()
+      if (newVal !== oldVal) {
+        formData.append(field, newVal)
+      }
+    })
+
+    // 处理头像上传：只有用户选择了新文件时才上传
+    const avatarInput = document.getElementById('edit-avatar')
+    if (avatarInput && avatarInput.files && avatarInput.files[0]) {
+      formData.append('avatar', avatarInput.files[0])
+    }
+
+    console.log('发送的更新数据:', [...formData.entries()])
+
     // 调用API更新个人资料
-    const response = await userAPI.updateProfile(profileForm.value)
-    console.log('更新个人资料成功:', response)
-    // 处理后端响应，确保获取正确的用户数据
-    const userData = response.data || response
+    const userData = await api.put('/users/profile/', formData)
+    console.log('更新个人资料成功:', userData)
+
     // 更新本地用户信息
-    user.value = userData
-    localStorage.setItem('user', JSON.stringify(userData))
+    user.value = {
+      ...user.value,
+      ...userData
+    }
+    // 同步到localStorage
+    let currentStoredUser = null
+    try { currentStoredUser = JSON.parse(localStorage.getItem('user')) } catch (e) {}
+    localStorage.setItem('user', JSON.stringify({
+      ...currentStoredUser,
+      ...userData
+    }))
     closeEditProfileModal()
+    alert('资料更新成功！')
   } catch (error) {
     console.error('更新个人资料失败:', error)
-    // 显示更具体的错误信息
     if (error.response) {
-      // 服务器返回错误
-      alert(`更新失败: ${error.response.data.error || error.response.statusText}`)
+      const errorMsg = error.response.data.error || error.response.data.detail || JSON.stringify(error.response.data) || error.response.statusText
+      alert(`更新失败: ${errorMsg}`)
     } else if (error.request) {
-      // 请求发送成功但没有收到响应
       alert('更新失败: 服务器无响应，请检查网络连接')
     } else {
-      // 其他错误
       alert(`更新失败: ${error.message}`)
     }
   } finally {
@@ -673,12 +808,13 @@ const saveProfile = async () => {
 const closeEditProfileModal = () => {
   showEditProfileModal.value = false
   profileForm.value = {
-    username: '',
+    nickname: '',
     email: '',
     phone: '',
     bio: '',
     avatar: ''
   }
+  originalUser.value = {}
   // 清空文件输入
   const fileInput = document.getElementById('edit-avatar')
   if (fileInput) {
@@ -917,7 +1053,58 @@ onUnmounted(() => {
   color: var(--text-medium);
 }
 
+.order-status {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
 
+.order-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.order-status.paid {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.order-status.confirmed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.order-status.completed {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.order-status.cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.order-status.refunded {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.order-type {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.order-create-time {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
 
 .order-content {
   display: flex;

@@ -20,7 +20,7 @@
           <h1>朝鲜族打糕体验</h1>
           <div class="note-meta">
             <router-link to="/user/美食爱好者" class="author">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Food%20blogger%20avatar%20profile%20picture&image_size=portrait_4_3" alt="美食爱好者" />
+              <img src="/image/KoreanRiceCakeNoteDetail/author_avatar.jpeg" alt="美食爱好者" />
               <span>@美食爱好者</span>
             </router-link>
             <span class="publish-date">2026-04-05</span>
@@ -34,7 +34,7 @@
         </div>
         <div class="note-content">
           <div class="note-cover">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20rice%20cake%20making%20experience%20traditional%20craft&image_size=landscape_16_9" alt="朝鲜族打糕体验" />
+            <img src="/image/KoreanRiceCakeNoteDetail/cover.jpeg" alt="朝鲜族打糕体验" />
           </div>
           <div class="note-text">
             <p>今天终于体验了朝鲜族传统的打糕制作，真的是一次非常有趣的文化体验！</p>
@@ -42,17 +42,17 @@
             <h3>打糕制作过程</h3>
             <p>打糕是朝鲜族的传统美食，制作过程非常有特色。我们首先看到了准备好的糯米，已经浸泡了几个小时，然后蒸熟。蒸熟的糯米被放在一个大木槽里，然后用木槌反复捶打。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Steamed%20glutinous%20rice%20for%20rice%20cake&image_size=portrait_4_3" alt="蒸熟的糯米" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20rice%20cake%20making%20with%20wooden%20hammer&image_size=portrait_4_3" alt="捶打糯米" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20rice%20cake%20dough%20preparation&image_size=portrait_4_3" alt="打糕面团" />
+              <img src="/image/KoreanRiceCakeNoteDetail/steamed_rice.jpeg" alt="蒸熟的糯米" />
+              <img src="/image/KoreanRiceCakeNoteDetail/hammer.jpeg" alt="捶打糯米" />
+              <img src="/image/KoreanRiceCakeNoteDetail/dough.jpeg" alt="打糕面团" />
             </div>
             <p>捶打的过程需要两个人配合，一个人捶打，另一个人在旁边翻动糯米团，确保每一部分都被均匀地捶打。这个过程需要一定的力量和技巧，看起来简单，实际操作起来还是有点难度的。</p>
             
             <h3>自己动手体验</h3>
             <p>在师傅的指导下，我们每个人都有机会亲自尝试捶打糯米。虽然一开始有点手忙脚乱，但在师傅的耐心指导下，我们逐渐掌握了技巧。捶打的过程不仅是制作美食，更是一种文化体验。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Tourist%20trying%20to%20make%20Korean%20rice%20cake&image_size=portrait_4_3" alt="游客体验打糕" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20rice%20cake%20making%20class&image_size=portrait_4_3" alt="打糕制作课堂" />
+              <img src="/image/KoreanRiceCakeNoteDetail/tourist.jpeg" alt="游客体验打糕" />
+              <img src="/image/KoreanRiceCakeNoteDetail/class.jpeg" alt="打糕制作课堂" />
               <img :src="dagao3" alt="成品打糕" />
             </div>
             
@@ -97,7 +97,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/KoreanRiceCakeNoteDetail/user_avatar_1.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@美食达人</span>
                   <span class="comment-date">2026-04-06</span>
@@ -115,7 +115,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/KoreanRiceCakeNoteDetail/user_avatar_2.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@文化探索者</span>
                   <span class="comment-date">2026-04-07</span>
@@ -133,7 +133,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/KoreanRiceCakeNoteDetail/user_avatar_3.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@旅行爱好者</span>
                   <span class="comment-date">2026-04-08</span>

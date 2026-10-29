@@ -1,0 +1,8 @@
+export { userAPI } from './users'
+export { tourAPI } from './tours'
+export { heritageAPI } from './heritage'
+export { productAPI } from './products'
+export { homestayAPI } from './homestay'
+export { activityAPI } from './activities'
+export { communityAPI } from './community'
+export { orderAPI } from './orders'

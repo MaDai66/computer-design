@@ -1,21 +1,42 @@
 import api from '../../api/axios'
 
-// 后台管理API
+const formatDate = (dateString) => {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}`
+}
+
 export const adminAPI = {
-  // 认证相关
   auth: {
     login: async (credentials) => {
-      try {
-        const response = await api.post('/users/login/', credentials)
-        return response
-      } catch (error) {
-        console.error('登录失败:', error)
-        // 模拟登录成功（用于开发测试）
+      const isDevMode = import.meta.env.VITE_DEV_MODE === 'true'
+      
+      if (isDevMode) {
+        console.log('开发模式：使用模拟登录')
         return {
-          token: 'mock-admin-token',
+          token: 'dev-mock-admin-token-' + Date.now(),
+          refresh: 'dev-mock-refresh-token',
           username: credentials.username,
           role: 'admin'
         }
+      }
+      
+      try {
+        const data = await api.post('/token/', credentials)
+        return {
+          token: data.access,
+          refresh: data.refresh,
+          username: credentials.username,
+          role: 'admin'
+        }
+      } catch (error) {
+        console.error('登录失败:', error)
+        throw error
       }
     },
     logout: async () => {
@@ -23,7 +44,6 @@ export const adminAPI = {
         return await api.post('/users/logout/')
       } catch (error) {
         console.error('登出失败:', error)
-        // 模拟登出成功
         return { success: true }
       }
     },
@@ -32,7 +52,6 @@ export const adminAPI = {
         return await api.get('/users/profile/')
       } catch (error) {
         console.error('获取个人信息失败:', error)
-        // 模拟获取个人信息
         return {
           username: 'admin',
           role: 'admin',
@@ -42,38 +61,16 @@ export const adminAPI = {
     }
   },
   
-  // 产品管理
   products: {
     getList: async (params) => {
       try {
         const response = await api.get('/products/', { params })
-        // 检查响应格式，如果是简单消息，则返回模拟数据
-        if (response.message) {
-          // 模拟产品数据
-          return {
-            results: [
-              {
-                id: 1,
-                name: '满族剪纸艺术套装',
-                price: 198,
-                description: '包含剪纸工具和材料，适合初学者',
-                image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20set&image_size=portrait_4_3'
-              },
-              {
-                id: 2,
-                name: '松花砚文房四宝',
-                price: 299,
-                description: '精选松花砚和配套文房用品',
-                image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=inkstone%20stationery%20set&image_size=portrait_4_3'
-              }
-            ],
-            total_pages: 1
-          }
+        if (!response || !response.results) {
+          throw new Error('无效的响应数据')
         }
         return response
       } catch (error) {
         console.error('获取产品列表失败:', error)
-        // 模拟产品数据
         return {
           results: [
             {
@@ -97,10 +94,10 @@ export const adminAPI = {
     },
     getDetail: async (id) => {
       try {
-        return await api.get(`/products/${id}/`)
+        const response = await api.get(`/products/${id}/`)
+        return response
       } catch (error) {
         console.error('获取产品详情失败:', error)
-        // 模拟产品详情
         return {
           id: id,
           name: '满族剪纸艺术套装',
@@ -115,7 +112,6 @@ export const adminAPI = {
         return await api.post('/products/', data)
       } catch (error) {
         console.error('创建产品失败:', error)
-        // 模拟创建成功
         return {
           id: Date.now(),
           ...data
@@ -127,7 +123,6 @@ export const adminAPI = {
         return await api.put(`/products/${id}/`, data)
       } catch (error) {
         console.error('更新产品失败:', error)
-        // 模拟更新成功
         return {
           id: id,
           ...data
@@ -139,20 +134,36 @@ export const adminAPI = {
         return await api.delete(`/products/${id}/`)
       } catch (error) {
         console.error('删除产品失败:', error)
-        // 模拟删除成功
         return { success: true }
       }
     }
   },
   
-  // 用户管理
   users: {
     getList: async (params) => {
       try {
-        return await api.get('/users/', { params })
+        const users = await api.get('/users/list/', { params })
+        if (!users || !Array.isArray(users)) {
+          throw new Error('无效的响应数据')
+        }
+        const processedUsers = users.map(user => ({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=user%20avatar&image_size=portrait_4_3',
+          registerTime: user.date_joined ? formatDate(user.date_joined) : '-',
+          lastLogin: user.last_login ? formatDate(user.last_login) : '-',
+          status: user.is_active ? 'active' : 'inactive',
+          statusText: user.is_active ? '活跃' : '禁用',
+          role: user.is_staff ? 'admin' : (user.is_superuser ? 'admin' : 'user'),
+          roleText: user.is_staff ? '管理员' : (user.is_superuser ? '管理员' : '普通用户')
+        }))
+        return {
+          results: processedUsers,
+          total_pages: 1
+        }
       } catch (error) {
         console.error('获取用户列表失败:', error)
-        // 模拟用户数据
         return {
           results: [
             {
@@ -186,10 +197,22 @@ export const adminAPI = {
     },
     getDetail: async (id) => {
       try {
-        return await api.get(`/users/${id}/`)
+        const response = await api.get(`/users/${id}/`)
+        const user = response.data || response
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=user%20avatar&image_size=portrait_4_3',
+          registerTime: user.date_joined ? formatDate(user.date_joined) : '-',
+          lastLogin: user.last_login ? formatDate(user.last_login) : '-',
+          status: user.is_active ? 'active' : 'inactive',
+          statusText: user.is_active ? '活跃' : '禁用',
+          role: user.is_staff ? 'admin' : (user.is_superuser ? 'admin' : 'user'),
+          roleText: user.is_staff ? '管理员' : (user.is_superuser ? '管理员' : '普通用户')
+        }
       } catch (error) {
         console.error('获取用户详情失败:', error)
-        // 模拟用户详情
         return {
           id: id,
           username: '张三',
@@ -206,10 +229,23 @@ export const adminAPI = {
     },
     update: async (id, data) => {
       try {
-        return await api.put(`/users/${id}/`, data)
+        const updateData = {
+          username: data.username,
+          email: data.email,
+          is_active: data.status === 'active'
+        }
+        const response = await api.put(`/users/${id}/`, updateData)
+        const user = response.data || response
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar,
+          status: user.is_active ? 'active' : 'inactive',
+          statusText: user.is_active ? '活跃' : '禁用'
+        }
       } catch (error) {
         console.error('更新用户失败:', error)
-        // 模拟更新成功
         return {
           id: id,
           ...data
@@ -221,29 +257,29 @@ export const adminAPI = {
         return await api.delete(`/users/${id}/`)
       } catch (error) {
         console.error('删除用户失败:', error)
-        // 模拟删除成功
         return { success: true }
       }
     },
     toggleStatus: async (id) => {
       try {
-        return await api.patch(`/users/${id}/toggle-status/`)
+        return await api.post(`/users/${id}/toggle-status/`)
       } catch (error) {
         console.error('切换用户状态失败:', error)
-        // 模拟切换成功
         return { success: true }
       }
     }
   },
   
-  // 订单管理
   orders: {
     getList: async (params) => {
       try {
-        return await api.get('/orders/', { params })
+        const response = await api.get('/orders/', { params })
+        if (!response || !response.results) {
+          throw new Error('无效的响应数据')
+        }
+        return response
       } catch (error) {
         console.error('获取订单列表失败:', error)
-        // 模拟订单数据
         return {
           results: [
             {
@@ -253,7 +289,7 @@ export const adminAPI = {
               itemsCount: 2,
               status: 'completed',
               statusText: '已完成',
-              createTime: '2026-04-19 10:30'
+              time: '2026-04-19 10:30'
             },
             {
               id: 'ORD-2026-002',
@@ -262,7 +298,25 @@ export const adminAPI = {
               itemsCount: 1,
               status: 'pending',
               statusText: '待处理',
-              createTime: '2026-04-19 09:15'
+              time: '2026-04-19 09:15'
+            },
+            {
+              id: 'ORD-2026-003',
+              user: '王五',
+              amount: 599,
+              itemsCount: 3,
+              status: 'shipped',
+              statusText: '已发货',
+              time: '2026-04-18 16:20'
+            },
+            {
+              id: 'ORD-2026-004',
+              user: '赵六',
+              amount: 128,
+              itemsCount: 1,
+              status: 'pending',
+              statusText: '待处理',
+              time: '2026-04-18 14:10'
             }
           ],
           total_pages: 1
@@ -274,7 +328,6 @@ export const adminAPI = {
         return await api.get(`/orders/${id}/`)
       } catch (error) {
         console.error('获取订单详情失败:', error)
-        // 模拟订单详情
         return {
           id: id,
           user: '张三',
@@ -312,7 +365,6 @@ export const adminAPI = {
         return await api.patch(`/orders/${id}/update-status/`, { status })
       } catch (error) {
         console.error('更新订单状态失败:', error)
-        // 模拟更新成功
         return { success: true }
       }
     },
@@ -321,20 +373,21 @@ export const adminAPI = {
         return await api.delete(`/orders/${id}/`)
       } catch (error) {
         console.error('删除订单失败:', error)
-        // 模拟删除成功
         return { success: true }
       }
     }
   },
   
-  // 活动管理
   activities: {
     getList: async (params) => {
       try {
-        return await api.get('/activities/', { params })
+        const response = await api.get('/activities/', { params })
+        if (!response || !response.results) {
+          throw new Error('无效的响应数据')
+        }
+        return response
       } catch (error) {
         console.error('获取活动列表失败:', error)
-        // 模拟活动数据
         return {
           results: [
             {
@@ -361,7 +414,6 @@ export const adminAPI = {
         return await api.get(`/activities/${id}/`)
       } catch (error) {
         console.error('获取活动详情失败:', error)
-        // 模拟活动详情
         return {
           id: id,
           title: '查干湖冬捕节',
@@ -376,7 +428,6 @@ export const adminAPI = {
         return await api.post('/activities/', data)
       } catch (error) {
         console.error('创建活动失败:', error)
-        // 模拟创建成功
         return {
           id: Date.now(),
           ...data
@@ -388,7 +439,6 @@ export const adminAPI = {
         return await api.put(`/activities/${id}/`, data)
       } catch (error) {
         console.error('更新活动失败:', error)
-        // 模拟更新成功
         return {
           id: id,
           ...data
@@ -400,20 +450,21 @@ export const adminAPI = {
         return await api.delete(`/activities/${id}/`)
       } catch (error) {
         console.error('删除活动失败:', error)
-        // 模拟删除成功
         return { success: true }
       }
     }
   },
   
-  // 非遗项目管理
   heritage: {
     getList: async (params) => {
       try {
-        return await api.get('/heritage/', { params })
+        const response = await api.get('/heritage/', { params })
+        if (!response || !response.results) {
+          throw new Error('无效的响应数据')
+        }
+        return response
       } catch (error) {
         console.error('获取非遗项目列表失败:', error)
-        // 模拟非遗项目数据
         return {
           results: [
             {
@@ -440,7 +491,6 @@ export const adminAPI = {
         return await api.get(`/heritage/${id}/`)
       } catch (error) {
         console.error('获取非遗项目详情失败:', error)
-        // 模拟非遗项目详情
         return {
           id: id,
           name: '满族剪纸',
@@ -455,7 +505,6 @@ export const adminAPI = {
         return await api.post('/heritage/', data)
       } catch (error) {
         console.error('创建非遗项目失败:', error)
-        // 模拟创建成功
         return {
           id: Date.now(),
           ...data
@@ -467,7 +516,6 @@ export const adminAPI = {
         return await api.put(`/heritage/${id}/`, data)
       } catch (error) {
         console.error('更新非遗项目失败:', error)
-        // 模拟更新成功
         return {
           id: id,
           ...data
@@ -479,20 +527,18 @@ export const adminAPI = {
         return await api.delete(`/heritage/${id}/`)
       } catch (error) {
         console.error('删除非遗项目失败:', error)
-        // 模拟删除成功
         return { success: true }
       }
     }
   },
   
-  // 数据分析
   analytics: {
     getOverview: async (params) => {
       try {
-        return await api.get('/analytics/overview/', { params })
+        const response = await api.get('/analytics/overview/', { params })
+        return response
       } catch (error) {
         console.error('获取概览数据失败:', error)
-        // 模拟概览数据
         return {
           revenue: 125000,
           revenue_change: 15.2,
@@ -501,7 +547,8 @@ export const adminAPI = {
           users: 342,
           users_change: 12.5,
           conversion: 3.2,
-          conversion_change: -0.5
+          conversion_change: -0.5,
+          products: 50
         }
       }
     },
@@ -510,7 +557,6 @@ export const adminAPI = {
         return await api.get('/analytics/sales-trend/', { params })
       } catch (error) {
         console.error('获取销售趋势失败:', error)
-        // 模拟销售趋势数据
         return {
           labels: ['1日', '2日', '3日', '4日', '5日', '6日', '7日'],
           data: [12000, 15000, 13000, 18000, 16000, 20000, 22000]
@@ -522,7 +568,6 @@ export const adminAPI = {
         return await api.get('/analytics/top-products/', { params })
       } catch (error) {
         console.error('获取产品排行失败:', error)
-        // 模拟产品排行数据
         return {
           results: [
             {
@@ -550,7 +595,6 @@ export const adminAPI = {
         return await api.get('/analytics/user-behavior/', { params })
       } catch (error) {
         console.error('获取用户行为失败:', error)
-        // 模拟用户行为数据
         return {
           source: {
             direct: 40,
@@ -569,5 +613,4 @@ export const adminAPI = {
   }
 }
 
-// 导出默认实例
 export default adminAPI

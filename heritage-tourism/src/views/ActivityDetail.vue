@@ -44,13 +44,13 @@
         </div>
         <div class="activity-images">
           <div class="main-image">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20ceremony%20traditional%20ritual&image_size=landscape_16_9" alt="查干湖冬捕开网仪式" />
+            <img src="/image/ActivityDetail/5a5701a8aa8d5e21e73b1b2391f1ea28.jpeg" alt="查干湖冬捕开网仪式" />
           </div>
           <div class="gallery">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20net%20pulling&image_size=portrait_4_3" alt="冬捕拉网" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20priest%20ceremony&image_size=portrait_4_3" alt="祭湖仪式" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20catch&image_size=portrait_4_3" alt="冬捕收获" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20scenic%20view%20winter&image_size=portrait_4_3" alt="查干湖冬景" />
+            <img src="/image/ActivityDetail/8efea36a0e7a2985dbe449f10f612318.jpeg" alt="冬捕拉网" />
+            <img src="/image/ActivityDetail/da0716d52516a626518ac2a8f00802fb.jpeg" alt="祭湖仪式" />
+            <img src="/image/ActivityDetail/10e5f6a46c82cf14b25839ee6b994878.jpeg" alt="冬捕收获" />
+            <img src="/image/ActivityDetail/10e5f6a46c82cf14b25839ee6b994878.jpeg" alt="查干湖冬景" />
           </div>
         </div>
         <div class="activity-actions">
@@ -219,7 +219,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/ActivityDetail/c84ffc36243ca6be1925a0dc36dd972e.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@旅行爱好者</span>
                   <span class="review-date">2025-12-28</span>
@@ -232,15 +232,15 @@
             <div class="review-content">
               <p>冬捕开网仪式非常震撼！祭湖醒网仪式很有传统特色，萨满舞表演也很精彩。看到渔民们在冰面上拉网捕鱼的场景，真的很壮观。中午的鱼餐也很美味，新鲜的查干湖鱼味道非常好。非常推荐大家来体验！</p>
               <div class="review-images">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20ceremony%20scene&image_size=portrait_4_3" alt="冬捕仪式" />
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Fresh%20fish%20from%20Chagan%20Lake&image_size=portrait_4_3" alt="新鲜鱼获" />
+                <img src="/image/ActivityDetail/21b6702d6664e72076ae14ea18672893.jpeg" alt="冬捕仪式" />
+                <img src="/image/ActivityDetail/7cb99e2d0662a0949666edb779281368.jpeg" alt="新鲜鱼获" />
               </div>
             </div>
           </div>
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/ActivityDetail/968d83f5fe772c5ce06a8107228a3fd3.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@文化探索者</span>
                   <span class="review-date">2025-12-25</span>
@@ -257,7 +257,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/ActivityDetail/bbb0350f1afc796ad6c25dbbc472148c.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@家庭出游</span>
                   <span class="review-date">2025-12-20</span>
@@ -316,7 +316,7 @@ const saveOrder = (e) => {
   const order = {
     orderId,
     title: '查干湖冬捕开网仪式',
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20ceremony&image_size=portrait_4_3',
+    image: '/image/ActivityDetail/ac2bfa5d470f7c93799f1706c1eec9f7.jpeg',
     date: formData.value.date + ' 08:00-12:00',
     price: '¥168/人',
     quantity: formData.value.count,

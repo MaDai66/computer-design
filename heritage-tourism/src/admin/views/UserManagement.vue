@@ -8,8 +8,9 @@
             type="text" 
             v-model="searchQuery" 
             placeholder="搜索用户..."
+            @keyup.enter="handleSearch"
           />
-          <button class="search-btn">搜索</button>
+          <button class="search-btn" @click="handleSearch">搜索</button>
         </div>
         <button class="btn btn-primary">
           导出用户数据
@@ -17,8 +18,13 @@
       </div>
     </div>
 
+    <!-- 加载状态 -->
+    <div v-if="isLoading" class="loading-state">
+      <p>加载中...</p>
+    </div>
+
     <!-- 用户列表 -->
-    <div class="users-table">
+    <div v-else class="users-table">
       <table>
         <thead>
           <tr>
@@ -72,12 +78,12 @@
     </div>
 
     <!-- 分页 -->
-    <div class="pagination">
-      <button class="page-btn" :disabled="currentPage === 1">上一页</button>
+    <div v-if="!isLoading" class="pagination">
+      <button class="page-btn" :disabled="currentPage === 1" @click="handlePageChange(currentPage - 1)">上一页</button>
       <span class="page-info">
         第 {{ currentPage }} 页，共 {{ totalPages }} 页
       </span>
-      <button class="page-btn" :disabled="currentPage === totalPages">下一页</button>
+      <button class="page-btn" :disabled="currentPage === totalPages" @click="handlePageChange(currentPage + 1)">下一页</button>
     </div>
 
     <!-- 用户详情模态框 -->
@@ -323,6 +329,20 @@ onMounted(() => {
 
 .btn-secondary:hover {
   background: #7f8c8d;
+}
+
+/* 加载状态 */
+.loading-state {
+  text-align: center;
+  padding: 48px 24px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loading-state p {
+  font-size: 16px;
+  color: #666;
 }
 
 /* 用户列表 */

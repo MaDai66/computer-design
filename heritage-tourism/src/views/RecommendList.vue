@@ -49,7 +49,7 @@ const handleScroll = () => {
 const recommendItems = ref([
   {
     id: 1,
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20Korean%20rice%20cake%20making%20experience%20traditional%20craft&image_size=portrait_4_3',
+    image: '/image/RecommendList/ricecake_experience.jpeg',
     title: '朝鲜族打糕制作体验',
     description: '亲手体验传统打糕制作，感受朝鲜族饮食文化',
     price: '¥88/人',
@@ -61,7 +61,7 @@ const recommendItems = ref([
   },
   {
     id: 2,
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20traditional%20farmhouse%20stay%20rural%20accommodation&image_size=portrait_4_3',
+    image: '/image/RecommendList/farmhouse.jpeg',
     title: '长白山脚下农家院',
     description: '体验乡村生活，感受自然之美',
     price: '¥280/晚',
@@ -73,7 +73,7 @@ const recommendItems = ref([
   },
   {
     id: 3,
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20art%20traditional%20craft%20Jilin&image_size=portrait_4_3',
+    image: '/image/RecommendList/papercutting.jpeg',
     title: '满族剪纸艺术套装',
     description: '传统剪纸工艺，精美文创礼品',
     price: '¥128',

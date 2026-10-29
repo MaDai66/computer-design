@@ -1,78 +1,82 @@
 <template>
-  <div class="admin-layout">
+  <el-container class="admin-layout">
     <!-- 侧边导航 -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2>后台管理</h2>
+    <el-aside width="200px" class="sidebar">
+      <div class="sidebar-logo">
+        <h2>吉韵遗风</h2>
+        <span class="logo-subtitle">后台管理系统</span>
       </div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li>
-            <router-link to="/admin" class="nav-item">
-              <span class="nav-icon">🏠</span>
-              <span class="nav-text">首页</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/admin/content" class="nav-item">
-              <span class="nav-icon">📄</span>
-              <span class="nav-text">内容管理</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/admin/users" class="nav-item">
-              <span class="nav-icon">👥</span>
-              <span class="nav-text">用户管理</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/admin/orders" class="nav-item">
-              <span class="nav-icon">📦</span>
-              <span class="nav-text">订单管理</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/admin/analytics" class="nav-item">
-              <span class="nav-icon">📊</span>
-              <span class="nav-text">数据分析</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/admin/settings" class="nav-item">
-              <span class="nav-icon">⚙️</span>
-              <span class="nav-text">系统设置</span>
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+      <el-menu
+        :default-active="activeMenu"
+        class="sidebar-menu"
+        mode="vertical"
+        background-color="#2c3e50"
+        text-color="#ecf0f1"
+        active-text-color="#409eff"
+        @select="handleMenuSelect"
+      >
+        <el-menu-item index="/admin">
+          <el-icon name="House"></el-icon>
+          <span>首页</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/content">
+          <el-icon name="Folder"></el-icon>
+          <span>内容管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/users">
+          <el-icon name="User"></el-icon>
+          <span>用户管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/orders">
+          <el-icon name="ShoppingCart"></el-icon>
+          <span>订单管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/analytics">
+          <el-icon name="BarChart3"></el-icon>
+          <span>数据分析</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/settings">
+          <el-icon name="Settings"></el-icon>
+          <span>系统设置</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
 
     <!-- 主内容区 -->
-    <main class="main-content">
+    <el-container class="main-container">
       <!-- 顶部栏 -->
-      <header class="top-bar">
-        <div class="top-bar-left">
-          <button class="toggle-sidebar" @click="toggleSidebar">
-            ☰
-          </button>
-          <h3>{{ currentPage }}</h3>
+      <el-header class="top-header">
+        <div class="header-left">
+          <el-button
+            icon="Menu"
+            class="toggle-btn"
+            @click="toggleSidebar"
+            circle
+          ></el-button>
+          <span class="page-title">{{ currentPage }}</span>
         </div>
-        <div class="top-bar-right">
-          <div class="user-info">
-            <span class="username">{{ adminUser.username }}</span>
-            <button class="logout-btn" @click="handleLogout">
-              退出
-            </button>
-          </div>
+        <div class="header-right">
+          <el-dropdown>
+            <span class="user-info">
+              <el-icon name="User"></el-icon>
+              <span>{{ adminUser.username }}</span>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>个人信息</el-dropdown-item>
+                <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
-      </header>
+      </el-header>
 
       <!-- 内容区域 -->
-      <div class="content-area">
+      <el-main class="content-area">
         <router-view />
-      </div>
-    </main>
-  </div>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script setup>
@@ -81,8 +85,9 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-const sidebarCollapsed = ref(false)
 const adminUser = ref({ username: '管理员' })
+
+const activeMenu = computed(() => route.path)
 
 const currentPage = computed(() => {
   const pageMap = {
@@ -97,24 +102,43 @@ const currentPage = computed(() => {
 })
 
 const toggleSidebar = () => {
-  sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+const handleMenuSelect = (index) => {
+  router.push(index)
 }
 
 const handleLogout = () => {
-  // 清除登录状态
   localStorage.removeItem('adminToken')
   localStorage.removeItem('adminUser')
-  // 跳转到登录页面
   router.push('/admin/login')
 }
 
 onMounted(() => {
-  // 检查登录状态
+  console.log('AdminLayout mounted')
+  console.log('当前路径:', window.location.pathname)
+  
+  const token = localStorage.getItem('adminToken')
   const user = localStorage.getItem('adminUser')
-  if (user) {
-    adminUser.value = JSON.parse(user)
+  
+  console.log('Token存在:', !!token)
+  console.log('User信息存在:', !!user)
+  
+  if (token) {
+    if (user) {
+      try {
+        adminUser.value = JSON.parse(user)
+        console.log('已解析用户信息:', adminUser.value)
+      } catch (e) {
+        console.error('解析用户信息失败:', e)
+        adminUser.value = { username: '管理员' }
+      }
+    } else {
+      adminUser.value = { username: '管理员' }
+      console.log('无用户信息，使用默认值')
+    }
   } else {
-    // 未登录，跳转到登录页
+    console.log('未找到token，跳转到登录页')
     router.push('/admin/login')
   }
 })
@@ -122,110 +146,71 @@ onMounted(() => {
 
 <style scoped>
 .admin-layout {
-  display: flex;
-  min-height: 100vh;
-  background: #f5f7fa;
+  height: 100vh;
 }
 
-/* 侧边导航 */
 .sidebar {
-  width: 240px;
-  background: #2c3e50;
-  color: white;
-  transition: width 0.3s;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
 }
 
-.sidebar.collapsed {
-  width: 80px;
+.sidebar-logo {
+  padding: 24px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid #34495e;
-}
-
-.sidebar-header h2 {
+.sidebar-logo h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
+  color: #fff;
 }
 
-.sidebar-nav {
-  padding: 20px 0;
+.sidebar-logo .logo-subtitle {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
 }
 
-.sidebar-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.sidebar-menu {
+  border-right: none;
+  height: calc(100% - 80px);
 }
 
-.nav-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 20px;
-  color: #ecf0f1;
-  text-decoration: none;
-  transition: all 0.3s;
-  border-left: 3px solid transparent;
-}
-
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-left-color: #3498db;
-}
-
-.nav-item.router-link-active {
-  background: rgba(255, 255, 255, 0.15);
-  border-left-color: #3498db;
-  font-weight: 500;
-}
-
-.nav-icon {
-  margin-right: 12px;
-  font-size: 18px;
-}
-
-/* 主内容区 */
-.main-content {
+.main-container {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* 顶部栏 */
-.top-bar {
-  background: white;
-  border-bottom: 1px solid #e0e6ed;
+.top-header {
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
   padding: 0 20px;
-  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
-.top-bar-left {
+.header-left {
   display: flex;
   align-items: center;
 }
 
-.toggle-sidebar {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  margin-right: 20px;
-  color: #333;
+.toggle-btn {
+  margin-right: 16px;
 }
 
-.top-bar-left h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
+.page-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
 }
 
-.top-bar-right {
+.header-right {
   display: flex;
   align-items: center;
 }
@@ -233,52 +218,24 @@ onMounted(() => {
 .user-info {
   display: flex;
   align-items: center;
-}
-
-.username {
-  margin-right: 20px;
-  font-weight: 500;
-  color: #333;
-}
-
-.logout-btn {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
-.logout-btn:hover {
-  background: #c0392b;
+.user-info:hover {
+  background-color: #f5f7fa;
 }
 
-/* 内容区域 */
+.user-info span {
+  margin-left: 8px;
+  color: #606266;
+}
+
 .content-area {
-  flex: 1;
   padding: 20px;
+  background-color: #f5f7fa;
   overflow-y: auto;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    z-index: 1000;
-    transform: translateX(-100%);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .content-area {
-    padding: 15px;
-  }
 }
 </style>

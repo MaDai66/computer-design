@@ -69,25 +69,54 @@ const handleLogin = async () => {
   errorMessage.value = ''
 
   try {
+    console.log('开始登录流程...')
+    console.log('用户名:', loginForm.value.username)
+    
     // 调用真实的登录API
     const response = await adminAPI.auth.login({
       username: loginForm.value.username,
       password: loginForm.value.password
     })
     
-    // 保存登录状态
-    localStorage.setItem('adminToken', response.token)
-    localStorage.setItem('adminUser', JSON.stringify({
-      username: response.username,
-      role: response.role
-    }))
+    console.log('登录响应成功:', response)
+    console.log('Token:', response.token ? '已获取' : '未获取')
     
-    // 跳转到后台首页
-    router.push('/admin')
+    // 保存登录状态
+    if (response.token) {
+      localStorage.setItem('adminToken', response.token)
+      localStorage.setItem('adminUser', JSON.stringify({
+        username: response.username || loginForm.value.username,
+        role: response.role || 'admin'
+      }))
+      
+      console.log('已保存token和用户信息到localStorage')
+      console.log('准备跳转到 /admin')
+      
+      // 使用 router.push 进行跳转
+      await router.push('/admin')
+      
+      console.log('跳转完成')
+    } else {
+      console.error('未获取到token:', response)
+      errorMessage.value = '登录失败：未获取到有效token'
+    }
   } catch (error) {
+    console.error('登录过程中发生错误:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误状态:', error.response?.status)
+    console.error('错误数据:', error.response?.data)
+    
     // 处理错误
-    if (error.response && error.response.data) {
-      errorMessage.value = error.response.data.message || '登录失败'
+    if (error.response) {
+      if (error.response.status === 401) {
+        errorMessage.value = '用户名或密码错误'
+      } else if (error.response.data) {
+        errorMessage.value = error.response.data.detail || error.response.data.message || '登录失败'
+      } else {
+        errorMessage.value = `登录失败 (错误码: ${error.response.status})`
+      }
+    } else if (error.request) {
+      errorMessage.value = '无法连接到服务器，请确保后端服务已启动'
     } else {
       errorMessage.value = '登录失败，请检查网络连接'
     }

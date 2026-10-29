@@ -2,7 +2,7 @@
   <div class="heritage-experience-detail">
     <!-- 顶部图片轮播 -->
     <div class="top-banner">
-      <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Jilin%20Korean%20rice%20cake%20making%20experience%20traditional%20craft&image_size=landscape_16_9" alt="朝鲜族打糕制作体验" />
+      <img src="/image/HeritageExperienceDetail/23126c794322dd1692a831771a6c5487.jpeg" alt="朝鲜族打糕制作体验" />
       <div class="banner-content">
         <h1>朝鲜族打糕制作体验</h1>
         <div class="experience-tags">
@@ -44,7 +44,7 @@
       <section class="inheritor-info">
         <h2>传承人信息</h2>
         <div class="inheritor-card">
-          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elderly%20Korean%20woman%20rice%20cake%20maker%20traditional%20craftsman&image_size=portrait_4_3" alt="金师傅" />
+          <img src="/image/HeritageExperienceDetail/23126c794322dd1692a831771a6c5487.jpeg" alt="金师傅" />
           <div class="inheritor-content">
             <h3>金顺玉 师傅</h3>
             <p class="title">朝鲜族打糕制作技艺传承人</p>
@@ -72,7 +72,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/HeritageExperienceDetail/c84ffc36243ca6be1925a0dc36dd972e.jpeg" alt="用户头像" />
                 <span class="user-name">@美食爱好者</span>
               </div>
               <div class="review-rating">
@@ -85,7 +85,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/HeritageExperienceDetail/968d83f5fe772c5ce06a8107228a3fd3.jpeg" alt="用户头像" />
                 <span class="user-name">@文化探索者</span>
               </div>
               <div class="review-rating">
@@ -98,7 +98,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/HeritageExperienceDetail/c84ffc36243ca6be1925a0dc36dd972e.jpeg" alt="用户头像" />
                 <span class="user-name">@亲子游家庭</span>
               </div>
               <div class="review-rating">

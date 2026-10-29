@@ -1,35 +1,35 @@
 <template>
   <div class="tour-route-detail">
-
+    <div v-if="loading" class="loading-overlay">
+      <div class="loading">加载中...</div>
+    </div>
+    <div v-else-if="error" class="error-message">{{ error }}</div>
 
     <div class="container">
       <!-- 路线主信息 -->
       <section class="route-main">
         <div class="route-header">
-          <h1>长白山满族寻根 2 日游</h1>
+          <h1>{{ tour?.name || '加载中...' }}</h1>
           <div class="route-tags">
-            <span class="tag tag-orange">旅行含小明</span>
-            <span class="tag tag-blue">非遗主题</span>
-            <span class="tag tag-green">文化体验</span>
+            <span v-for="tag in tour?.tags" :key="tag" class="tag" :class="getTagClass(tag)">
+              {{ tag }}
+            </span>
           </div>
           <div class="route-price">
-            <span class="price">¥688 / 人起</span>
-            <span class="duration">2 天 1 晚</span>
+            <span class="price">¥{{ tour?.price || 688 }} / 人起</span>
+            <span class="duration">{{ tour?.duration || '2 天 1 晚' }}</span>
           </div>
           <div class="route-stats">
-            <span class="rating">⭐⭐⭐⭐⭐ 4.9 (1280条评价)</span>
-            <span class="sales">已售 2580 份</span>
+            <span class="rating">⭐⭐⭐⭐⭐ {{ tour?.rating || 4.9 }} ({{ tour?.review_count || 1280 }}条评价)</span>
+            <span class="sales">已售 {{ tour?.sales_count || 2580 }} 份</span>
           </div>
         </div>
         <div class="route-images">
           <div class="main-image">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20Manchu%20cultural%20tour%20scenic%20view&image_size=landscape_16_9" alt="长白山满族寻根 2 日游" />
+            <img :src="tour?.image" :alt="tour?.name" />
           </div>
           <div class="gallery">
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20traditional%20village%20cultural%20experience&image_size=portrait_4_3" alt="满族民俗村" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20traditional%20ceremony%20ritual&image_size=portrait_4_3" alt="满族传统仪式" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20landscape%20scenery&image_size=portrait_4_3" alt="长白山风景" />
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20traditional%20food%20cuisine&image_size=portrait_4_3" alt="满族传统美食" />
+            <img v-for="(img, index) in tour?.gallery" :key="index" :src="img" :alt="`图片${index + 1}`" />
           </div>
         </div>
         <div class="route-actions">
@@ -40,113 +40,17 @@
       <!-- 每日行程 -->
       <section class="daily-itinerary">
         <h2>每日行程</h2>
-        
-        <!-- 第一天 -->
-        <div class="day-itinerary">
+        <div v-for="(day, dayIndex) in tour?.days" :key="day.id" class="day-itinerary">
           <div class="day-header">
-            <span class="day-number">DAY 1</span>
-            <h3>满族民俗村体验日</h3>
+            <span class="day-number">DAY {{ dayIndex + 1 }}</span>
+            <h3>{{ day.title }}</h3>
           </div>
           <div class="day-content">
-            <div class="time-slot">
-              <div class="time">08:00 - 09:00</div>
+            <div v-for="(slot, slotIndex) in day.time_slots" :key="slot.id" class="time-slot">
+              <div class="time">{{ slot.time_range }}</div>
               <div class="activity">
-                <h4>集合出发</h4>
-                <p>指定地点集合，乘坐舒适旅游大巴前往满族民俗村</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">09:00 - 11:30</div>
-              <div class="activity">
-                <h4>满族民俗村参观</h4>
-                <p>游览满族传统建筑，了解满族历史文化，参观满族民俗博物馆</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">11:30 - 13:00</div>
-              <div class="activity">
-                <h4>满族传统午餐</h4>
-                <p>品尝满族特色美食，如满族火锅、萨其马等传统菜肴</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">13:00 - 15:30</div>
-              <div class="activity">
-                <h4>非遗体验：满族剪纸</h4>
-                <p>由国家级非遗传承人指导，学习满族剪纸技艺，制作属于自己的剪纸作品</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">15:30 - 17:00</div>
-              <div class="activity">
-                <h4>满族传统服饰体验</h4>
-                <p>穿上满族传统服饰，拍照留念，感受满族文化魅力</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">17:00 - 18:30</div>
-              <div class="activity">
-                <h4>入住民宿</h4>
-                <p>入住满族风格民宿，休息调整</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">18:30 - 20:00</div>
-              <div class="activity">
-                <h4>满族篝火晚会</h4>
-                <p>参加传统篝火晚会，欣赏满族歌舞表演，品尝烤全羊</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 第二天 -->
-        <div class="day-itinerary">
-          <div class="day-header">
-            <span class="day-number">DAY 2</span>
-            <h3>长白山寻根日</h3>
-          </div>
-          <div class="day-content">
-            <div class="time-slot">
-              <div class="time">07:00 - 08:00</div>
-              <div class="activity">
-                <h4>早餐</h4>
-                <p>享用营养早餐，准备开始一天的行程</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">08:00 - 10:00</div>
-              <div class="activity">
-                <h4>前往长白山</h4>
-                <p>乘坐大巴前往长白山景区</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">10:00 - 12:30</div>
-              <div class="activity">
-                <h4>长白山游览</h4>
-                <p>参观长白山天池，欣赏壮丽的自然景观</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">12:30 - 13:30</div>
-              <div class="activity">
-                <h4>长白山特色午餐</h4>
-                <p>品尝长白山特色美食，如人参鸡汤、林蛙等</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">13:30 - 15:30</div>
-              <div class="activity">
-                <h4>满族祭祀仪式</h4>
-                <p>参加满族传统祭祀仪式，了解满族宗教信仰和文化传统</p>
-              </div>
-            </div>
-            <div class="time-slot">
-              <div class="time">15:30 - 17:30</div>
-              <div class="activity">
-                <h4>返回市区</h4>
-                <p>乘坐大巴返回市区，结束愉快的旅程</p>
+                <h4>{{ slot.activity }}</h4>
+                <p>{{ slot.description }}</p>
               </div>
             </div>
           </div>
@@ -157,33 +61,12 @@
       <section class="heritage-highlights">
         <h2>非遗亮点</h2>
         <div class="highlights-grid">
-          <div class="highlight-item">
+          <div v-for="(highlight, index) in tour?.highlights" :key="index" class="highlight-item">
             <div class="highlight-icon">
-              <span>🎨</span>
+              <span>{{ highlight.icon }}</span>
             </div>
-            <h3>满族剪纸</h3>
-            <p>国家级非物质文化遗产，历史悠久，风格独特，是满族文化的重要组成部分</p>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">
-              <span>👘</span>
-            </div>
-            <h3>满族传统服饰</h3>
-            <p>色彩鲜艳，图案精美，体现了满族的审美观念和文化特色</p>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">
-              <span>🔥</span>
-            </div>
-            <h3>满族篝火晚会</h3>
-            <p>传统的满族庆典活动，包含歌舞表演、烤全羊等环节</p>
-          </div>
-          <div class="highlight-item">
-            <div class="highlight-icon">
-              <span>🙏</span>
-            </div>
-            <h3>满族祭祀仪式</h3>
-            <p>传承千年的满族宗教仪式，体现了满族对自然和祖先的敬畏</p>
+            <h3>{{ highlight.name }}</h3>
+            <p>{{ highlight.description }}</p>
           </div>
         </div>
       </section>
@@ -195,34 +78,19 @@
           <div class="cost-includes">
             <h3>费用包含</h3>
             <ul>
-              <li>全程旅游大巴交通</li>
-              <li>1晚满族风格民宿住宿</li>
-              <li>3餐特色餐食（1早餐、2午餐）</li>
-              <li>长白山景区门票</li>
-              <li>满族民俗村门票</li>
-              <li>所有非遗体验活动费用</li>
-              <li>专业导游服务</li>
-              <li>旅游保险</li>
+              <li v-for="(item, index) in tour?.cost_includes" :key="index">{{ item }}</li>
             </ul>
           </div>
           <div class="cost-excludes">
             <h3>费用不含</h3>
             <ul>
-              <li>个人消费</li>
-              <li>往返集合地点的交通费用</li>
-              <li>因天气等不可抗力因素产生的额外费用</li>
-              <li>其他未提及的费用</li>
+              <li v-for="(item, index) in tour?.cost_excludes" :key="index">{{ item }}</li>
             </ul>
           </div>
           <div class="booking-notes">
             <h3>预订须知</h3>
             <ul>
-              <li>至少提前3天预订</li>
-              <li>人数限制：每团最多30人</li>
-              <li>儿童政策：1.2米以下儿童半价，1.2米以上全价</li>
-              <li>退改政策：出发前3天可全额退款，出发前1-2天退款50%，出发当天不退款</li>
-              <li>建议穿着舒适的运动鞋和保暖衣物</li>
-              <li>请携带身份证等有效证件</li>
+              <li v-for="(note, index) in tour?.booking_notes" :key="index">{{ note }}</li>
             </ul>
           </div>
         </div>
@@ -233,72 +101,45 @@
         <h2>用户评价</h2>
         <div class="reviews-header">
           <div class="rating-overall">
-            <span class="rating-score">4.9</span>
-            <span class="rating-stars">⭐⭐⭐⭐⭐</span>
-            <span class="rating-count">1280条评价</span>
+            <span class="rating-score">{{ tour?.rating || 4.9 }}</span>
+            <span class="rating-stars">{{ '⭐'.repeat(Math.floor(tour?.rating || 4.9)) }}</span>
+            <span class="rating-count">{{ tour?.review_count || 1280 }}条评价</span>
           </div>
           <div class="review-filter">
-            <button class="filter-btn active">全部评价</button>
-            <button class="filter-btn">好评</button>
-            <button class="filter-btn">中评</button>
-            <button class="filter-btn">差评</button>
-            <button class="filter-btn">有图</button>
+            <button class="filter-btn" :class="{ active: reviewFilter === 'all' }" @click="changeReviewFilter('all')">全部评价</button>
+            <button class="filter-btn" :class="{ active: reviewFilter === 'good' }" @click="changeReviewFilter('good')">好评</button>
+            <button class="filter-btn" :class="{ active: reviewFilter === 'middle' }" @click="changeReviewFilter('middle')">中评</button>
+            <button class="filter-btn" :class="{ active: reviewFilter === 'bad' }" @click="changeReviewFilter('bad')">差评</button>
+            <button class="filter-btn" :class="{ active: reviewFilter === 'has_image' }" @click="changeReviewFilter('has_image')">有图</button>
           </div>
         </div>
         <div class="reviews-list">
-          <div class="review-item">
+          <div v-for="review in reviews" :key="review.id" class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img :src="review.avatar || '/image/TourRouteDetail/user_avatar_1.jpeg'" alt="用户头像" />
                 <div class="user-details">
-                  <span class="user-name">@旅行爱好者</span>
-                  <span class="review-date">2026-04-10</span>
+                  <span class="user-name">{{ review.username }}</span>
+                  <span class="review-date">{{ review.date }}</span>
                 </div>
               </div>
               <div class="review-rating">
-                <span>⭐⭐⭐⭐⭐</span>
+                <span>{{ '⭐'.repeat(review.rating) }}</span>
               </div>
             </div>
             <div class="review-content">
-              <p>这次旅行非常棒！满族民俗村的体验很丰富，剪纸课程很有意思，老师教得很耐心。长白山的景色也很美，天池真的很壮观。导游讲解很专业，全程服务周到。非常推荐！</p>
-              <div class="review-images">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20class%20experience&image_size=portrait_4_3" alt="剪纸体验" />
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20天池%20scenic%20view&image_size=portrait_4_3" alt="天池风景" />
+              <p v-if="review.content.length <= 100">{{ review.content }}</p>
+              <p v-else>
+                {{ review.content.slice(0, 100) }}...
+                <span class="expand-btn" @click="toggleReviewExpand(review.id)">展开</span>
+              </p>
+              <p v-if="expandedReviews.includes(review.id)" class="expanded-content">
+                {{ review.content }}
+                <span class="expand-btn" @click="toggleReviewExpand(review.id)">收起</span>
+              </p>
+              <div v-if="review.images && review.images.length > 0" class="review-images">
+                <img v-for="(img, index) in review.images" :key="index" :src="img" :alt="`评价图片${index + 1}`" />
               </div>
-            </div>
-          </div>
-          <div class="review-item">
-            <div class="review-header">
-              <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
-                <div class="user-details">
-                  <span class="user-name">@文化探索者</span>
-                  <span class="review-date">2026-04-08</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span>⭐⭐⭐⭐⭐</span>
-              </div>
-            </div>
-            <div class="review-content">
-              <p>这是一次非常有意义的文化之旅。满族的传统文化非常丰富，从服饰、饮食到仪式，都让我大开眼界。特别是篝火晚会，非常热闹，感受到了满族人民的热情好客。住宿条件也很好，干净舒适。</p>
-            </div>
-          </div>
-          <div class="review-item">
-            <div class="review-header">
-              <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
-                <div class="user-details">
-                  <span class="user-name">@家庭出游</span>
-                  <span class="review-date">2026-04-05</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span>⭐⭐⭐⭐⭐</span>
-              </div>
-            </div>
-            <div class="review-content">
-              <p>带孩子一起参加的，孩子非常喜欢剪纸体验和篝火晚会。导游对孩子也很有耐心，讲解生动有趣。行程安排合理，不会太赶，适合家庭出游。满族的美食也很合我们的口味，特别是满族火锅，非常好吃。</p>
             </div>
           </div>
         </div>
@@ -345,7 +186,7 @@
               <div class="route-itinerary">
                 <h6>每日行程</h6>
                 <div v-for="(day, index) in aiResult.itinerary" :key="index" class="day-plan">
-                  <h7>Day {{ index + 1 }}</h7>
+                  <h6>Day {{ index + 1 }}</h6>
                   <ul>
                     <li v-for="(activity, actIndex) in day.activities" :key="actIndex">{{ activity }}</li>
                   </ul>
@@ -374,7 +215,7 @@
     <div v-if="showBookingModal" class="modal-overlay" @click="closeBookingModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>预订长白山满族寻根 2 日游</h3>
+          <h3>预订 {{ tour?.name || '加载中...' }}</h3>
           <button class="close-btn" @click="closeBookingModal">&times;</button>
         </div>
         <div class="modal-body">
@@ -418,10 +259,35 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { tourAPI } from '@/api/tours'
+import api from '@/api/axios'
 
 const router = useRouter()
+const route = useRoute()
 const showBackToTop = ref(false)
+
+// 路线数据
+const tour = ref(null)
+const loading = ref(true)
+const error = ref('')
+
+// 评价数据
+const reviews = ref([])
+const reviewFilter = ref('all')
+const currentPage = ref(1)
+const totalPages = ref(1)
+const expandedReviews = ref([])
+
+// 切换评价展开/收起
+const toggleReviewExpand = (reviewId) => {
+  const index = expandedReviews.value.indexOf(reviewId)
+  if (index > -1) {
+    expandedReviews.value.splice(index, 1)
+  } else {
+    expandedReviews.value.push(reviewId)
+  }
+}
 
 // 预订模态框
 const showBookingModal = ref(false)
@@ -453,6 +319,12 @@ const aiResult = ref(null)
 
 // 打开预订模态框
 const openBookingModal = () => {
+  const user = localStorage.getItem('user')
+  if (!user) {
+    alert('请先登录')
+    router.push('/login')
+    return
+  }
   showBookingModal.value = true
 }
 
@@ -461,58 +333,196 @@ const closeBookingModal = () => {
   showBookingModal.value = false
 }
 
-// 保存订单到localStorage
-const saveOrder = (order) => {
+// 提交预订到后端
+const submitBooking = async () => {
+  if (!bookingForm.value.agree) {
+    alert('请先同意须知和隐私政策')
+    return
+  }
+
+  if (!bookingForm.value.name || !bookingForm.value.phone) {
+    alert('请填写姓名和手机号码')
+    return
+  }
+
+  let user = null
   try {
-    // 从localStorage读取现有订单
-    const storedOrders = localStorage.getItem('orders')
-    let orders = []
-    if (storedOrders) {
-      orders = JSON.parse(storedOrders)
+    user = JSON.parse(localStorage.getItem('user'))
+  } catch (e) {
+    console.error('解析用户数据失败:', e)
+  }
+  if (!user || !user.id) {
+    alert('请先登录')
+    router.push('/login')
+    return
+  }
+
+  try {
+    const tourId = parseInt(route.params.id)
+    
+    console.log('=== 预订信息 ===')
+    console.log('tourId:', tourId)
+    console.log('bookingForm:', bookingForm.value)
+    console.log('localStorage中的token:', localStorage.getItem('token'))
+    
+    if (isNaN(tourId)) {
+      alert('无法获取路线ID')
+      return
     }
     
-    // 添加新订单
-    orders.push(order)
+    const orderData = {
+      tour_id: tourId,
+      user_id: user.id,
+      travel_date: bookingForm.value.date,
+      guests: bookingForm.value.guests,
+      contact_name: bookingForm.value.name,
+      contact_phone: bookingForm.value.phone,
+      notes: bookingForm.value.notes
+    }
     
-    // 保存回localStorage
-    localStorage.setItem('orders', JSON.stringify(orders))
+    console.log('发送的订单数据:', orderData)
+    
+    // 使用 api 发送请求，会自动携带 token
+    const response = await api.post('/orders/create_tour_order/', orderData)
+    
+    console.log('订单创建成功，响应:', response)
+    alert('预订成功！')
+    closeBookingModal()
+    // 跳转到我的页面
+    router.push('/profile')
+    
   } catch (error) {
-    console.error('Error saving order:', error)
+    console.error('=== 提交预订异常 ===')
+    console.error('错误对象:', error)
+    console.error('响应数据:', JSON.stringify(error.response?.data, null, 2))
+    console.error('响应状态:', error.response?.status)
+    console.error('响应头:', error.response?.headers)
+    console.error('错误消息:', error.message)
+
+    const errorData = error.response?.data
+    let errorMessage = ''
+    if (errorData) {
+      if (errorData.message) {
+        errorMessage = errorData.message
+      } else if (errorData.items && errorData.items.length > 0) {
+        const itemErrors = errorData.items[0]
+        errorMessage = Object.entries(itemErrors).map(([k, v]) => `${k}: ${v}`).join('; ')
+      } else {
+        errorMessage = JSON.stringify(errorData)
+      }
+    }
+    alert('预订失败: ' + (errorMessage || error.message || '服务器错误'))
   }
 }
 
-// 提交预订
-const submitBooking = () => {
-  if (!bookingForm.value.agree) return
+// 根据路由名称获取对应的路线ID（数据库删除后新的ID）
+const getTourIdFromRoute = () => {
+  const routeName = route.name
+  console.log('Current route name:', routeName)
+  console.log('Current route params:', route.params)
   
-  // 生成订单ID
-  const orderId = 'ORD' + Date.now()
-  
-  // 创建订单对象
-  const order = {
-    id: orderId,
-    type: 'tour',
-    item: '长白山满族寻根 2 日游',
-    price: 688,
-    totalPrice: 688 * bookingForm.value.guests,
-    guests: bookingForm.value.guests,
-    date: bookingForm.value.date,
-    status: 'pending',
-    createdAt: new Date().toISOString()
+  const tourIdMap = {
+    'TourRouteDetail': '20',  // 长白山满族寻根2日游
+    'TourDetailWithId': route.params.id || '20',
+    'KoreanVillageTourDetail': '18',  // 朝鲜族民俗村1日游
+    'ChaganLakeTourDetail': '19',     // 查干湖冬捕3日游
+    'SonghuaLakeTourDetail': '17'     // 松花湖生态文化2日游
   }
   
-  // 保存订单到localStorage
-  saveOrder(order)
-  
-  // 关闭模态框
-  closeBookingModal()
-  
-  // 跳转到我的页面
-  router.push('/profile')
+  const tourId = tourIdMap[routeName] || '20'
+  console.log('Mapped tour ID:', tourId)
+  return tourId
+}
+
+// 获取路线详情
+const fetchTourDetail = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const tourId = getTourIdFromRoute()
+    console.log('Fetching tour detail for ID:', tourId)
+    
+    const response = await tourAPI.getTourDetail(tourId)
+    console.log('API Response:', response)
+    console.log('API Response name:', response.name)
+    console.log('API Response highlights:', response.highlights)
+    
+    // 处理API返回的数据结构
+    tour.value = {
+      ...response,
+      // 处理每日行程
+      days: response.days?.map(day => ({
+        ...day,
+        time_slots: day.time_slots?.map(slot => ({
+          ...slot,
+          time_range: slot.time  // 统一字段名
+        })) || []
+      })) || [],
+      // 处理非遗亮点
+      highlights: response.highlights?.map(h => ({
+        ...h,
+        name: h.title  // 统一字段名
+      })) || [],
+      // 处理费用说明
+      cost_includes: response.cost_info?.includes || [],
+      cost_excludes: response.cost_info?.excludes || [],
+      booking_notes: response.cost_info?.booking_notes || [],
+      // 处理图片
+      image: getImageUrl(response.image),
+      gallery: (response.gallery_base64 || []).map(img => getImageUrl(img))
+    }
+    
+    console.log('Processed tour data:', tour.value)
+    console.log('Tour name after processing:', tour.value.name)
+    console.log('Tour highlights after processing:', tour.value.highlights)
+  } catch (err) {
+    error.value = '获取路线详情失败'
+    console.error('Error fetching tour detail:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 获取图片URL（处理相对路径）
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return '/image/default-tour.jpeg'
+  if (imagePath.startsWith('http')) return imagePath
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+  return apiBaseUrl + imagePath
+}
+
+// 获取评价列表
+const fetchReviews = async () => {
+  try {
+    const tourId = getTourIdFromRoute()
+    const response = await tourAPI.getTourReviews(tourId, {
+      page: currentPage.value,
+      limit: 10,
+      filter: reviewFilter.value
+    })
+    
+    // 处理评价数据
+    reviews.value = (response.results || []).map(review => ({
+      ...review,
+      avatar: getImageUrl(review.avatar),
+      images: (review.images || []).map(img => getImageUrl(img)),
+      username: review.user_name  // 统一字段名
+    }))
+    totalPages.value = response.total_pages || 1
+  } catch (err) {
+    console.error('Error fetching reviews:', err)
+  }
+}
+
+// 切换评价筛选
+const changeReviewFilter = (filter) => {
+  reviewFilter.value = filter
+  currentPage.value = 1
+  fetchReviews()
 }
 
 // 生成AI路线
-const generateRoute = () => {
+const generateRoute = async () => {
   // 清除之前的结果，显示加载状态
   aiResult.value = {
     title: 'AI正在生成路线...',
@@ -521,487 +531,24 @@ const generateRoute = () => {
     highlights: []
   }
   
-  // 模拟AI生成路线
-  setTimeout(() => {
-    const days = aiForm.value.days
-    const interests = []
-    
-    if (aiForm.value.interests.culture) interests.push('文化体验')
-    if (aiForm.value.interests.nature) interests.push('自然风光')
-    if (aiForm.value.interests.food) interests.push('美食探索')
-    if (aiForm.value.interests.leisure) interests.push('休闲度假')
-    
-    // 生成AI风格的标题和描述
-    const generateAITitle = (days, interests) => {
-      const prefixes = ['智能定制', 'AI推荐', '个性化', '专属', '定制化']
-      const themes = interests.length > 0 ? interests.join('+') : '综合体验'
-      const suffixes = {
-        '1': '一日游',
-        '2': '二日游',
-        '3': '三日游',
-        '4': '四日游',
-        '5+': '多日深度游'
-      }
-      const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)]
-      return `${randomPrefix}·${themes}${suffixes[days] || '深度游'}`
-    }
-    
-    const generateAIDescription = (days, interests) => {
-      const intro = ['基于您的兴趣偏好，AI为您精心定制了', '根据您的个性化需求，智能推荐', '结合您的旅行偏好，为您打造']
-      const middle = interests.length > 0 
-        ? `以${interests.join('、')}为核心的` 
-        : '全方位的'
-      const activities = ['沉浸式体验', '深度探索', '文化之旅', '自然探索', '美食之旅', '休闲度假']
-      const randomIntro = intro[Math.floor(Math.random() * intro.length)]
-      const randomActivity = activities[Math.floor(Math.random() * activities.length)]
-      return `${randomIntro}${middle}${randomActivity}，让您在${days === '1' ? '一天' : days === '2' ? '两天' : '多天'}的行程中充分感受吉林的独特魅力。`
-    }
-    
-    let title = generateAITitle(days, interests)
-    let description = generateAIDescription(days, interests)
-    let itinerary = []
-    let highlights = []
-    
-    // 根据兴趣偏好生成完全不同的路线
-    if (interests.length === 0) {
-      // 默认综合路线
-      if (days === '1') {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 参观吉林省博物馆，了解吉林历史文化',
-              '11:30 - 品尝吉林特色午餐（推荐：李连贵熏肉大饼、吉林煎粉）',
-              '13:30 - 体验满族剪纸艺术',
-              '15:30 - 游览伪满皇宫博物院',
-              '17:30 - 结束行程'
-            ]
-          }
-        ]
-        highlights = ['文化体验丰富', '历史感强烈', '适合一日游', '行程紧凑合理']
-      } else if (days === '2') {
-        itinerary = [
-          {
-            activities: [
-              '08:00 - 出发前往长白山',
-              '11:30 - 抵达长白山，品尝山珍午餐（推荐：长白山珍宴、人参鸡汤）',
-              '13:00 - 游览长白山天池',
-              '15:30 - 参观长白山满族文化园',
-              '18:00 - 入住长白山脚下民宿'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 早餐后前往满族民俗村',
-              '09:30 - 体验满族传统活动',
-              '11:30 - 品尝满族特色午餐（推荐：满族火锅、萨其马）',
-              '13:00 - 参观长白山瀑布',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['自然风光壮丽', '文化体验丰富', '适合周末游', '住宿环境舒适']
-      } else {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 参观吉林省博物馆',
-              '11:30 - 品尝吉林特色午餐（推荐：李连贵熏肉大饼、吉林煎粉）',
-              '13:30 - 体验满族剪纸艺术',
-              '15:30 - 游览伪满皇宫博物院',
-              '17:30 - 入住酒店'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 出发前往长白山',
-              '11:30 - 抵达长白山，品尝山珍午餐（推荐：长白山珍宴、人参鸡汤）',
-              '13:00 - 游览长白山天池',
-              '15:30 - 参观长白山满族文化园',
-              '18:00 - 入住长白山脚下民宿'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 早餐后前往满族民俗村',
-              '09:30 - 体验满族传统活动',
-              '11:30 - 品尝满族特色午餐（推荐：满族火锅、萨其马）',
-              '13:00 - 参观长白山瀑布',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['行程丰富', '文化深度体验', '自然景观壮丽', '美食种类多样']
-      }
-    } else if (interests.includes('文化体验') && !interests.includes('自然风光') && !interests.includes('美食探索') && !interests.includes('休闲度假')) {
-      // 纯文化体验路线
-      if (days === '1') {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 参观吉林省博物馆，深度了解吉林历史文化',
-              '11:30 - 品尝传统吉林午餐，感受饮食文化',
-              '13:30 - 体验国家级非遗：满族剪纸艺术',
-              '15:30 - 游览伪满皇宫博物院，了解近代历史',
-              '17:30 - 参观吉林文庙，体验儒家文化'
-            ]
-          }
-        ]
-        highlights = ['文化体验深度', '非遗项目丰富', '历史感强烈', '适合文化爱好者']
-      } else if (days === '2') {
-        itinerary = [
-          {
-            activities: [
-              '08:00 - 出发前往满族民俗村',
-              '10:00 - 参观满族民俗博物馆，了解满族历史',
-              '11:30 - 品尝满族特色午餐（推荐：满族火锅、萨其马）',
-              '13:00 - 体验满族传统服饰和礼仪',
-              '15:30 - 参与满族传统手工艺制作',
-              '18:00 - 入住满族风格民宿，感受传统居住文化'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 早餐后前往朝鲜族民俗村',
-              '09:30 - 参观朝鲜族文化博物馆',
-              '11:30 - 品尝朝鲜族特色午餐（推荐：冷面、辣白菜）',
-              '13:00 - 体验朝鲜族传统舞蹈和音乐',
-              '15:30 - 参与朝鲜族传统手工艺制作',
-              '17:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['多民族文化体验', '非遗项目丰富', '传统工艺学习', '文化深度探索']
-      } else {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 参观吉林省博物馆，了解吉林历史文化',
-              '11:30 - 品尝传统吉林午餐',
-              '13:30 - 体验满族剪纸艺术',
-              '15:30 - 游览伪满皇宫博物院',
-              '17:30 - 入住酒店'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 出发前往满族民俗村',
-              '10:00 - 参观满族民俗博物馆',
-              '11:30 - 品尝满族特色午餐',
-              '13:00 - 体验满族传统服饰和礼仪',
-              '15:30 - 参与满族传统手工艺制作',
-              '18:00 - 入住满族风格民宿'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 早餐后前往朝鲜族民俗村',
-              '09:30 - 参观朝鲜族文化博物馆',
-              '11:30 - 品尝朝鲜族特色午餐',
-              '13:00 - 体验朝鲜族传统舞蹈和音乐',
-              '15:30 - 参与朝鲜族传统手工艺制作',
-              '17:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['多民族文化体验', '非遗项目丰富', '传统工艺学习', '文化深度探索', '历史感强烈']
-      }
-    } else if (interests.includes('自然风光') && !interests.includes('文化体验') && !interests.includes('美食探索') && !interests.includes('休闲度假')) {
-      // 纯自然风光路线
-      if (days === '1') {
-        itinerary = [
-          {
-            activities: [
-              '08:00 - 出发前往净月潭国家森林公园',
-              '09:30 - 游览净月潭，欣赏湖光山色',
-              '11:30 - 品尝景区特色午餐',
-              '13:00 - 徒步森林步道，感受自然氧吧',
-              '15:30 - 参观净月潭博物馆，了解生态知识',
-              '17:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['自然风光优美', '生态环境良好', '适合户外活动', '空气清新']
-      } else if (days === '2') {
-        itinerary = [
-          {
-            activities: [
-              '07:00 - 出发前往长白山',
-              '10:30 - 抵达长白山，品尝山珍午餐',
-              '12:00 - 游览长白山天池，欣赏壮丽景观',
-              '14:30 - 参观长白山瀑布',
-              '16:30 - 游览长白山地下森林',
-              '18:30 - 入住长白山脚下民宿'
-            ]
-          },
-          {
-            activities: [
-              '07:00 - 早餐后前往长白山大峡谷',
-              '09:00 - 徒步长白山大峡谷，感受自然奇观',
-              '11:30 - 品尝景区特色午餐',
-              '13:00 - 游览长白山温泉群',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['自然风光壮丽', '生态环境原始', '徒步体验丰富', '空气清新', '适合自然爱好者']
-      } else {
-        itinerary = [
-          {
-            activities: [
-              '08:00 - 出发前往净月潭国家森林公园',
-              '09:30 - 游览净月潭，欣赏湖光山色',
-              '11:30 - 品尝景区特色午餐',
-              '13:00 - 徒步森林步道',
-              '15:30 - 参观净月潭博物馆',
-              '17:30 - 入住酒店'
-            ]
-          },
-          {
-            activities: [
-              '07:00 - 出发前往长白山',
-              '10:30 - 抵达长白山，品尝山珍午餐',
-              '12:00 - 游览长白山天池',
-              '14:30 - 参观长白山瀑布',
-              '16:30 - 游览长白山地下森林',
-              '18:30 - 入住长白山脚下民宿'
-            ]
-          },
-          {
-            activities: [
-              '07:00 - 早餐后前往长白山大峡谷',
-              '09:00 - 徒步长白山大峡谷',
-              '11:30 - 品尝景区特色午餐',
-              '13:00 - 游览长白山温泉群',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['自然风光壮丽', '生态环境原始', '徒步体验丰富', '空气清新', '适合自然爱好者', '行程安排合理']
-      }
-    } else if (interests.includes('美食探索') && !interests.includes('文化体验') && !interests.includes('自然风光') && !interests.includes('休闲度假')) {
-      // 纯美食探索路线
-      if (days === '1') {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 早餐品尝吉林特色早点（推荐：煎粉、豆腐脑）',
-              '11:30 - 午餐品尝吉林传统美食（推荐：李连贵熏肉大饼、锅包肉）',
-              '13:30 - 下午茶品尝吉林特色甜点（推荐：萨其马、打糕）',
-              '15:30 - 参观吉林美食文化博物馆，了解吉林饮食文化',
-              '17:30 - 晚餐品尝吉林特色火锅'
-            ]
-          }
-        ]
-        highlights = ['美食种类丰富', '特色小吃众多', '饮食文化体验', '适合美食爱好者']
-      } else if (days === '2') {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 早餐品尝吉林特色早点',
-              '11:30 - 午餐品尝满族特色美食（推荐：满族火锅、萨其马）',
-              '13:30 - 参观满族饮食文化博物馆',
-              '15:30 - 体验满族传统美食制作',
-              '18:30 - 晚餐品尝长白山山珍宴'
-            ]
-          },
-          {
-            activities: [
-              '09:00 - 早餐品尝朝鲜族特色早点',
-              '11:30 - 午餐品尝朝鲜族特色美食（推荐：冷面、辣白菜、烤肉）',
-              '13:30 - 参观朝鲜族饮食文化博物馆',
-              '15:30 - 体验朝鲜族传统美食制作',
-              '17:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['多民族美食体验', '特色小吃众多', '美食制作体验', '饮食文化学习', '适合美食爱好者']
-      } else {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 早餐品尝吉林特色早点',
-              '11:30 - 午餐品尝吉林传统美食',
-              '13:30 - 下午茶品尝吉林特色甜点',
-              '15:30 - 参观吉林美食文化博物馆',
-              '17:30 - 晚餐品尝吉林特色火锅',
-              '入住酒店'
-            ]
-          },
-          {
-            activities: [
-              '09:00 - 早餐品尝满族特色早点',
-              '11:30 - 午餐品尝满族特色美食',
-              '13:30 - 参观满族饮食文化博物馆',
-              '15:30 - 体验满族传统美食制作',
-              '18:30 - 晚餐品尝长白山山珍宴',
-              '入住长白山脚下民宿'
-            ]
-          },
-          {
-            activities: [
-              '09:00 - 早餐品尝朝鲜族特色早点',
-              '11:30 - 午餐品尝朝鲜族特色美食',
-              '13:30 - 参观朝鲜族饮食文化博物馆',
-              '15:30 - 体验朝鲜族传统美食制作',
-              '17:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['多民族美食体验', '特色小吃众多', '美食制作体验', '饮食文化学习', '适合美食爱好者', '行程安排合理']
-      }
-    } else if (interests.includes('休闲度假') && !interests.includes('文化体验') && !interests.includes('自然风光') && !interests.includes('美食探索')) {
-      // 纯休闲度假路线
-      if (days === '1') {
-        itinerary = [
-          {
-            activities: [
-              '10:00 - 抵达吉林温泉度假村',
-              '11:30 - 品尝度假村特色午餐',
-              '13:00 - 体验温泉浸泡，放松身心',
-              '15:30 - 享受SPA按摩服务',
-              '17:30 - 晚餐后返程'
-            ]
-          }
-        ]
-        highlights = ['休闲放松', '温泉体验', 'SPA服务', '适合减压放松']
-      } else if (days === '2') {
-        itinerary = [
-          {
-            activities: [
-              '10:00 - 抵达松花湖度假村',
-              '11:30 - 品尝湖鲜特色午餐',
-              '13:00 - 体验水上休闲活动（推荐：划船、钓鱼）',
-              '15:30 - 享受度假村SPA服务',
-              '18:30 - 晚餐品尝湖鲜盛宴',
-              '20:00 - 参加度假村夜间娱乐活动'
-            ]
-          },
-          {
-            activities: [
-              '09:00 - 早餐后自由活动',
-              '11:30 - 品尝度假村特色午餐',
-              '13:00 - 体验温泉浸泡',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['休闲放松', '水上活动', '温泉体验', 'SPA服务', '适合减压放松']
-      } else {
-        itinerary = [
-          {
-            activities: [
-              '10:00 - 抵达吉林温泉度假村',
-              '11:30 - 品尝度假村特色午餐',
-              '13:00 - 体验温泉浸泡',
-              '15:30 - 享受SPA按摩服务',
-              '18:30 - 晚餐品尝度假村特色美食',
-              '入住度假村'
-            ]
-          },
-          {
-            activities: [
-              '10:00 - 抵达松花湖度假村',
-              '11:30 - 品尝湖鲜特色午餐',
-              '13:00 - 体验水上休闲活动',
-              '15:30 - 享受度假村SPA服务',
-              '18:30 - 晚餐品尝湖鲜盛宴',
-              '20:00 - 参加度假村夜间娱乐活动',
-              '入住度假村'
-            ]
-          },
-          {
-            activities: [
-              '09:00 - 早餐后自由活动',
-              '11:30 - 品尝度假村特色午餐',
-              '13:00 - 体验温泉浸泡',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['休闲放松', '水上活动', '温泉体验', 'SPA服务', '适合减压放松', '行程安排合理']
-      }
-    } else {
-      // 混合兴趣路线
-      if (days === '1') {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 参观吉林省博物馆',
-              '11:30 - 品尝吉林特色午餐',
-              '13:30 - 体验满族剪纸艺术',
-              '15:30 - 游览净月潭国家森林公园',
-              '17:30 - 晚餐品尝吉林特色火锅'
-            ]
-          }
-        ]
-        highlights = ['文化体验', '自然风光', '美食探索', '行程紧凑合理']
-      } else if (days === '2') {
-        itinerary = [
-          {
-            activities: [
-              '08:00 - 出发前往长白山',
-              '11:30 - 抵达长白山，品尝山珍午餐',
-              '13:00 - 游览长白山天池',
-              '15:30 - 参观长白山满族文化园',
-              '18:00 - 入住长白山脚下民宿',
-              '19:00 - 晚餐品尝长白山山珍宴'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 早餐后前往满族民俗村',
-              '09:30 - 体验满族传统活动',
-              '11:30 - 品尝满族特色午餐',
-              '13:00 - 参观长白山瀑布',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['自然风光', '文化体验', '美食探索', '适合周末游']
-      } else {
-        itinerary = [
-          {
-            activities: [
-              '09:00 - 参观吉林省博物馆',
-              '11:30 - 品尝吉林特色午餐',
-              '13:30 - 体验满族剪纸艺术',
-              '15:30 - 游览伪满皇宫博物院',
-              '17:30 - 入住酒店'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 出发前往长白山',
-              '11:30 - 抵达长白山，品尝山珍午餐',
-              '13:00 - 游览长白山天池',
-              '15:30 - 参观长白山满族文化园',
-              '18:00 - 入住长白山脚下民宿'
-            ]
-          },
-          {
-            activities: [
-              '08:00 - 早餐后前往满族民俗村',
-              '09:30 - 体验满族传统活动',
-              '11:30 - 品尝满族特色午餐',
-              '13:00 - 参观长白山瀑布',
-              '15:30 - 返程'
-            ]
-          }
-        ]
-        highlights = ['文化体验', '自然风光', '美食探索', '行程丰富', '适合深度游']
-      }
-    }
-    
-    // 添加AI生成的特色标识
-    highlights.push('AI智能定制', '个性化推荐', '行程优化')
-    
+  try {
+    const response = await tourAPI.customizeRoute(aiForm.value)
+    aiResult.value = response
+  } catch (err) {
     aiResult.value = {
-      title,
-      description,
-      itinerary,
-      highlights
+      title: '生成失败',
+      description: 'AI路线生成失败，请重试',
+      itinerary: [],
+      highlights: []
     }
-  }, 1500)
+  }
+}
+
+const getTagClass = (tag) => {
+  if (tag.includes('非遗')) return 'tag-orange'
+  if (tag.includes('文化')) return 'tag-blue'
+  if (tag.includes('小明')) return 'tag-green'
+  return 'tag-default'
 }
 
 const scrollToTop = () => {
@@ -1018,13 +565,11 @@ const handleScroll = () => {
 onMounted(() => {
   // 监听滚动事件
   window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  // 移除滚动事件监听
-  window.removeEventListener('scroll', handleScroll)
-})
-</script>
+  // 获取路线详情
+  fetchTourDetail()
+  // 获取评价列表
+  fetchReviews()
+})</script>
 
 <style scoped>
 .tour-route-detail {
@@ -1499,6 +1044,21 @@ section h3 {
   line-height: 1.5;
   color: var(--text-medium);
   margin-bottom: 16px;
+}
+
+.expand-btn {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
+.expand-btn:hover {
+  text-decoration: underline;
+}
+
+.expanded-content {
+  margin-top: 8px;
 }
 
 .review-images {

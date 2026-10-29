@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import SmartTour from '../views/SmartTour.vue'
+import TourRouteDetail from '../views/TourRouteDetail.vue'
 import Heritage from '../views/Heritage.vue'
 import Homestay from '../views/Homestay.vue'
 import Gifts from '../views/Gifts.vue'
@@ -11,33 +12,19 @@ import RecommendList from '../views/RecommendList.vue'
 import HeritageTourList from '../views/HeritageTourList.vue'
 import HeritageExperienceDetail from '../views/HeritageExperienceDetail.vue'
 import HomestayDetail from '../views/HomestayDetail.vue'
-import ProductDetail from '../views/ProductDetail.vue'
-import TourRouteDetail from '../views/TourRouteDetail.vue'
 import ActivityDetail from '../views/ActivityDetail.vue'
 import PaperCuttingDetail from '../views/PaperCuttingDetail.vue'
 import NongakDanceDetail from '../views/NongakDanceDetail.vue'
-import KoreanVillageTourDetail from '../views/KoreanVillageTourDetail.vue'
-import ChaganLakeTourDetail from '../views/ChaganLakeTourDetail.vue'
 import ChaganLakeOpeningCeremony from '../views/ChaganLakeOpeningCeremony.vue'
-import GinsengProductDetail from '../views/GinsengProductDetail.vue'
-import CornProductDetail from '../views/CornProductDetail.vue'
-import HoneyProductDetail from '../views/HoneyProductDetail.vue'
-import KimchiProductDetail from '../views/KimchiProductDetail.vue'
 import TravelNoteDetail from '../views/TravelNoteDetail.vue'
 import KoreanRiceCakeNoteDetail from '../views/KoreanRiceCakeNoteDetail.vue'
 import HomestayExperienceNoteDetail from '../views/HomestayExperienceNoteDetail.vue'
-import SonghuaLakeTourDetail from '../views/SonghuaLakeTourDetail.vue'
 import HeritageArtistDetail from '../views/HeritageArtistDetail.vue'
-
-import KoreanRiceCakeProductDetail from '../views/KoreanRiceCakeProductDetail.vue'
-import ChaganLakeFishProductDetail from '../views/ChaganLakeFishProductDetail.vue'
-import SonghuaLakeEggProductDetail from '../views/SonghuaLakeEggProductDetail.vue'
-import CulturalGiftBoxProductDetail from '../views/CulturalGiftBoxProductDetail.vue'
-import WinterFishingSouvenirProductDetail from '../views/WinterFishingSouvenirProductDetail.vue'
-import SceneryPhotographyProductDetail from '../views/SceneryPhotographyProductDetail.vue'
+import GenericProductDetail from '../views/GenericProductDetail.vue'
 import CloudWorkshop from '../views/CloudWorkshop.vue'
 import ARInteraction from '../views/ARInteraction.vue'
 import WinterFishing360 from '../views/WinterFishing360.vue'
+import HeritageCategoryDemo from '../views/HeritageCategoryDemo.vue'
 
 // 后台管理组件
 import AdminLogin from '../admin/views/Login.vue'
@@ -47,6 +34,7 @@ import ContentManagement from '../admin/views/ContentManagement.vue'
 import UserManagement from '../admin/views/UserManagement.vue'
 import OrderManagement from '../admin/views/OrderManagement.vue'
 import Analytics from '../admin/views/Analytics.vue'
+import Settings from '../admin/views/Settings.vue'
 
 const routes = [
   {
@@ -109,10 +97,20 @@ const routes = [
     name: 'HomestayDetail',
     component: HomestayDetail
   },
-  { path: '/product-detail/:id', name: 'ProductDetail', component: ProductDetail },
+  { 
+    path: '/product-detail/:id', 
+    name: 'ProductDetail', 
+    component: GenericProductDetail 
+  },
+  // 统一的旅游路线详情页
   {
-    path: '/tour-route-detail',
-    name: 'TourRouteDetail',
+    path: '/tour-detail',
+    name: 'TourDetail',
+    component: TourRouteDetail
+  },
+  {
+    path: '/tour-detail/:id',
+    name: 'TourDetailWithId',
     component: TourRouteDetail
   },
   {
@@ -130,15 +128,26 @@ const routes = [
     name: 'NongakDanceDetail',
     component: NongakDanceDetail
   },
+  // 兼容旧路由的旅游详情页
   {
-    path: '/korean-village-tour-detail',
-    name: 'KoreanVillageTourDetail',
-    component: KoreanVillageTourDetail
+    path: '/tour-route-detail',
+    name: 'TourRouteDetail',
+    component: TourRouteDetail
+  },
+  {
+    path: '/tour-route-detail/:id',
+    name: 'TourRouteDetailWithId',
+    component: TourRouteDetail
   },
   {
     path: '/chagan-lake-tour-detail',
     name: 'ChaganLakeTourDetail',
-    component: ChaganLakeTourDetail
+    component: TourRouteDetail
+  },
+  {
+    path: '/korean-village-tour-detail',
+    name: 'KoreanVillageTourDetail',
+    component: TourRouteDetail
   },
   {
     path: '/chagan-lake-opening-ceremony',
@@ -146,24 +155,24 @@ const routes = [
     component: ChaganLakeOpeningCeremony
   },
   {
-    path: '/ginseng-product-detail',
+    path: '/ginseng-product-detail/:id?',
     name: 'GinsengProductDetail',
-    component: GinsengProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/corn-product-detail',
+    path: '/corn-product-detail/:id?',
     name: 'CornProductDetail',
-    component: CornProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/honey-product-detail',
+    path: '/honey-product-detail/:id?',
     name: 'HoneyProductDetail',
-    component: HoneyProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/kimchi-product-detail',
+    path: '/kimchi-product-detail/:id?',
     name: 'KimchiProductDetail',
-    component: KimchiProductDetail
+    component: GenericProductDetail
   },
   {
     path: '/travel-note-detail',
@@ -183,43 +192,42 @@ const routes = [
   {
     path: '/songhua-lake-tour-detail',
     name: 'SonghuaLakeTourDetail',
-    component: SonghuaLakeTourDetail
+    component: TourRouteDetail
   },
   {
     path: '/heritage-artist-detail/:id',
     name: 'HeritageArtistDetail',
     component: HeritageArtistDetail
   },
-
   {
-    path: '/korean-rice-cake-product-detail',
+    path: '/korean-rice-cake-product-detail/:id?',
     name: 'KoreanRiceCakeProductDetail',
-    component: KoreanRiceCakeProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/chagan-lake-fish-product-detail',
+    path: '/chagan-lake-fish-product-detail/:id?',
     name: 'ChaganLakeFishProductDetail',
-    component: ChaganLakeFishProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/songhua-lake-egg-product-detail',
+    path: '/songhua-lake-egg-product-detail/:id?',
     name: 'SonghuaLakeEggProductDetail',
-    component: SonghuaLakeEggProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/cultural-gift-box-product-detail',
+    path: '/cultural-gift-box-product-detail/:id?',
     name: 'CulturalGiftBoxProductDetail',
-    component: CulturalGiftBoxProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/winter-fishing-souvenir-product-detail',
+    path: '/winter-fishing-souvenir-product-detail/:id?',
     name: 'WinterFishingSouvenirProductDetail',
-    component: WinterFishingSouvenirProductDetail
+    component: GenericProductDetail
   },
   {
-    path: '/scenery-photography-product-detail',
+    path: '/scenery-photography-product-detail/:id?',
     name: 'SceneryPhotographyProductDetail',
-    component: SceneryPhotographyProductDetail
+    component: GenericProductDetail
   },
   {
     path: '/cloud-workshop',
@@ -235,6 +243,11 @@ const routes = [
     path: '/ar-interaction',
     name: 'ARInteraction',
     component: ARInteraction
+  },
+  {
+    path: '/heritage-category-demo',
+    name: 'HeritageCategoryDemo',
+    component: HeritageCategoryDemo
   },
   
   // 后台管理路由
@@ -273,6 +286,11 @@ const routes = [
         path: 'analytics',
         name: 'Analytics',
         component: Analytics
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: Settings
       }
     ]
   }

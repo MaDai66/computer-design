@@ -2,49 +2,59 @@ import axios from 'axios'
 
 const api = axios.create({
   baseURL: '/api',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json'
-  },
+  timeout: 15000,
   withCredentials: true
 })
 
-// 请求拦截器
+const isDevMode = import.meta.env.VITE_DEV_MODE === 'true'
+
 api.interceptors.request.use(
   config => {
-    // 添加token认证信息
-    const token = localStorage.getItem('adminToken') || localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    if (!isDevMode) {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+    if (!(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json'
     }
     return config
   },
-  error => {
-    return Promise.reject(error)
-  }
+  error => Promise.reject(error)
 )
 
-// 响应拦截器
 api.interceptors.response.use(
   response => {
-    // 处理204状态码（无内容响应）
     if (response.status === 204) {
       return { success: true }
     }
     return response.data
   },
   error => {
-    console.error('API Error:', error)
-    // 处理401错误（未授权）
-    if (error.response && error.response.status === 401) {
-      // 检查是否是登录请求，如果是登录请求，不要重定向
-      const isLoginRequest = error.config.url.includes('/login/')
-      if (!isLoginRequest) {
-        // 清除登录状态
+    const status = error.response?.status
+    const url = error.config?.url
+    
+    if (isDevMode && (status === 404 || status === 401)) {
+      console.debug(`[Dev Mode] API skipped: ${url} (${status})`)
+    } else {
+      console.error('API Error:', error)
+      console.error('URL:', url)
+      console.error('Status:', status)
+    }
+    
+    const isLoginUrl = url?.includes('/login') || url?.includes('/token')
+    const isOnLoginPage = window.location.pathname === '/admin/login' || window.location.pathname === '/login'
+    
+    if (!isDevMode && status === 401 && !isLoginUrl && !isOnLoginPage) {
+      const isAdminRequest = window.location.pathname.startsWith('/admin') || localStorage.getItem('adminToken')
+      
+      if (isAdminRequest) {
         localStorage.removeItem('adminToken')
         localStorage.removeItem('adminUser')
-        // 跳转到登录页
-        window.location.href = '/admin/login'
+      } else {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
       }
     }
     return Promise.reject(error)

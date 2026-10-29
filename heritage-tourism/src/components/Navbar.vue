@@ -50,21 +50,18 @@ const logout = () => {
   try {
     localStorage.removeItem('user')
     checkLoginStatus()
-    // 刷新页面以更新导航栏
     window.location.reload()
   } catch (error) {
     // 忽略错误
   }
 }
 
-// 监听路由变化，每次路由变化时检查登录状态
 watch(() => route.path, () => {
   checkLoginStatus()
 })
 
 onMounted(() => {
   checkLoginStatus()
-  // 监听storage变化，以便在其他页面登录/注销后更新状态
   window.addEventListener('storage', checkLoginStatus)
 })
 
@@ -74,31 +71,12 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.logout-btn {
-  background: none;
-  border: none;
-  color: var(--text-dark);
-  text-decoration: none;
-  font-weight: 500;
-  transition: var(--transition);
-  position: relative;
-  cursor: pointer;
-  padding: 0;
-  font-size: 16px;
-}
-
-.logout-btn:hover {
-  color: var(--primary-color);
-}
-</style>
-
-<style scoped>
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
-  background-color: rgba(253, 248, 240, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-color);
+  left: 0;
+  right: 0;
+  background-color: transparent;
   z-index: 1000;
   padding: 16px 0;
 }
@@ -124,8 +102,9 @@ onUnmounted(() => {
 .logo-text {
   font-size: 24px;
   font-weight: 700;
-  color: var(--primary-color);
   font-family: var(--font-serif);
+  color: var(--white);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-nav {
@@ -134,19 +113,20 @@ onUnmounted(() => {
 }
 
 .nav-item {
-  color: var(--text-dark);
   text-decoration: none;
   font-weight: 500;
-  transition: var(--transition);
+  color: var(--white);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s ease;
   position: relative;
 }
 
 .nav-item:hover {
-  color: var(--primary-color);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .nav-item.router-link-active {
-  color: var(--primary-color);
+  color: var(--white);
 }
 
 .nav-item.router-link-active::after {
@@ -156,11 +136,27 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: var(--primary-color);
+  background-color: var(--white);
   border-radius: 1px;
 }
 
-/* Responsive */
+.logout-btn {
+  background: none;
+  border: none;
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--white);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.logout-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 @media (max-width: 768px) {
   .navbar {
     padding: 12px 0;

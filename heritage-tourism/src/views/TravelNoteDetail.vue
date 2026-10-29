@@ -20,7 +20,7 @@
           <h1>长白山之旅</h1>
           <div class="note-meta">
             <router-link to="/user/小明" class="author">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Travel%20blogger%20avatar%20profile%20picture&image_size=portrait_4_3" alt="旅行含小明" />
+              <img src="/image/TravelNoteDetail/author_avatar.jpeg" alt="旅行含小明" />
               <span>@旅行含小明</span>
             </router-link>
             <span class="publish-date">2026-04-10</span>
@@ -42,27 +42,27 @@
             <h3>Day 1: 长白山北坡</h3>
             <p>早上从延吉出发，大约3小时车程到达长白山北坡景区。一下车就被眼前的美景震撼了，远处的长白山主峰在云雾中若隐若现，仿佛仙境一般。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20north%20slope%20entrance&image_size=portrait_4_3" alt="长白山北坡入口" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20waterfall&image_size=portrait_4_3" alt="长白山瀑布" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20hot%20springs&image_size=portrait_4_3" alt="长白山温泉" />
+              <img src="/image/TravelNoteDetail/day1_entrance.jpeg" alt="长白山北坡入口" />
+              <img src="/image/TravelNoteDetail/day1_waterfall.jpeg" alt="长白山瀑布" />
+              <img src="/image/TravelNoteDetail/day1_hotsprings.jpeg" alt="长白山温泉" />
             </div>
             <p>我们先乘坐景区大巴到天池换乘中心，然后再坐越野车上山。虽然山路崎岖，但沿途的风景非常壮观。到达天池后，我们被眼前的景象惊呆了 - 湛蓝的湖水像一块宝石镶嵌在群山之间，周围的雪山倒映在水中，美不胜收。</p>
             
             <h3>Day 2: 满族民俗村</h3>
             <p>第二天我们来到了附近的满族民俗村，体验了满族的传统文化。在这里，我们学习了满族剪纸技艺，穿上了传统的满族服饰，还品尝了正宗的满族美食。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20traditional%20village%20cultural%20experience&image_size=portrait_4_3" alt="满族民俗村" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20paper%20cutting%20class&image_size=portrait_4_3" alt="满族剪纸体验" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Manchu%20traditional%20food%20cuisine&image_size=portrait_4_3" alt="满族美食" />
+              <img src="/image/TravelNoteDetail/day2_village.jpeg" alt="满族民俗村" />
+              <img src="/image/TravelNoteDetail/day2_papercutting.jpeg" alt="满族剪纸体验" />
+              <img src="/image/TravelNoteDetail/day2_food.jpeg" alt="满族美食" />
             </div>
             <p>最让我印象深刻的是满族的篝火晚会，当地的村民们穿着传统服饰，载歌载舞，我们也加入其中，一起跳舞、唱歌，度过了一个难忘的夜晚。</p>
             
             <h3>Day 3: 长白山天池西坡</h3>
             <p>第三天我们来到了长白山西坡，这里的风景与北坡有所不同，更加原始和壮观。我们沿着1236级台阶登上山顶，虽然很累，但当看到天池的那一刻，所有的疲惫都值得了。</p>
             <div class="note-images">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20west%20slope%20steps&image_size=portrait_4_3" alt="西坡台阶" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20天池%20west%20view&image_size=portrait_4_3" alt="西坡天池" />
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20alpine%20meadow&image_size=portrait_4_3" alt="高山草甸" />
+              <img src="/image/TravelNoteDetail/day3_steps.jpeg" alt="西坡台阶" />
+              <img src="/image/TravelNoteDetail/day3_tianchi.jpeg" alt="西坡天池" />
+              <img src="/image/TravelNoteDetail/day3_meadow.jpeg" alt="高山草甸" />
             </div>
             <p>西坡的高山草甸非常漂亮，大片的野花盛开，仿佛置身于童话世界。我们在这里拍了很多照片，留下了美好的回忆。</p>
             
@@ -102,7 +102,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/TravelNoteDetail/user_avatar_1.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@旅行爱好者</span>
                   <span class="comment-date">2026-04-11</span>
@@ -120,7 +120,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/TravelNoteDetail/user_avatar_2.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@文化探索者</span>
                   <span class="comment-date">2026-04-12</span>
@@ -138,7 +138,7 @@
           <div class="comment-item">
             <div class="comment-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/TravelNoteDetail/user_avatar_3.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@美食达人</span>
                   <span class="comment-date">2026-04-13</span>

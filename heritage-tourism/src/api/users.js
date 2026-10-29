@@ -1,20 +1,14 @@
 import api from './axios'
 
 export const userAPI = {
-  // 用户注册
-  register: (userData) => {
-    return api.post('/users/register/', userData)
-  },
-  // 用户登录
-  login: (credentials) => {
-    return api.post('/users/login/', credentials)
-  },
-  // 获取用户信息
-  getProfile: () => {
-    return api.get('/users/profile/')
-  },
-  // 更新用户信息
-  updateProfile: (userData) => {
-    return api.post('/users/profile/', userData)
-  }
+  register: (userData) => api.post('/users/register/', userData),
+  login: (credentials) => api.post('/users/login/', credentials),
+  logout: () => api.post('/users/logout/'),
+  getProfile: () => api.get('/users/profile/'),
+  updateProfile: (userData) => api.put('/users/profile/', userData),
+  getAllUsers: () => api.get('/users/'),
+  getUserById: (id) => api.get(`/users/${id}/`),
+  updateUser: (id, userData) => api.put(`/users/${id}/`, userData),
+  deleteUser: (id) => api.delete(`/users/${id}/`),
+  toggleUserStatus: (id) => api.post(`/users/${id}/toggle-status/`)
 }

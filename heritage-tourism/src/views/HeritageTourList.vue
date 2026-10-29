@@ -47,35 +47,6 @@ const handleScroll = () => {
   showBackToTop.value = window.scrollY > 300
 }
 
-const tourItems = ref([
-  {
-    id: 1,
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Changbai%20Mountain%20Manchu%20cultural%20tour%20Jilin%20heritage&image_size=landscape_16_9',
-    title: '长白山满族寻根2日游',
-    days: '2天1晚',
-    experienceCount: 3,
-    description: '探访满族发源地，体验传统手工艺',
-    price: '¥688/人起'
-  },
-  {
-    id: 2,
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Korean%20ethnic%20village%20Jilin%20traditional%20culture%20tour&image_size=landscape_16_9',
-    title: '朝鲜族民俗村1日游',
-    days: '1天',
-    experienceCount: 4,
-    description: '感受朝鲜族传统文化，品尝特色美食',
-    price: '¥298/人起'
-  },
-  {
-    id: 3,
-    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chagan%20Lake%20winter%20fishing%20Jilin%20traditional%20custom&image_size=landscape_16_9',
-    title: '查干湖冬捕3日游',
-    days: '3天2晚',
-    experienceCount: 2,
-    description: '体验千年冬捕文化，感受北国风光',
-    price: '¥988/人起'
-  }
-])
 
 onMounted(() => {
   // 监听滚动事件

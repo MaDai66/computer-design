@@ -214,7 +214,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/NongakDanceDetail/user_avatar_1.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@文化爱好者</span>
                   <span class="review-date">2025-12-18</span>
@@ -235,7 +235,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%202&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/NongakDanceDetail/user_avatar_2.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@艺术欣赏者</span>
                   <span class="review-date">2025-12-15</span>
@@ -252,7 +252,7 @@
           <div class="review-item">
             <div class="review-header">
               <div class="user-info">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=User%20avatar%20profile%20picture%203&image_size=portrait_4_3" alt="用户头像" />
+                <img src="/image/NongakDanceDetail/user_avatar_3.jpeg" alt="用户头像" />
                 <div class="user-details">
                   <span class="user-name">@朝鲜族文化迷</span>
                   <span class="review-date">2025-12-10</span>
