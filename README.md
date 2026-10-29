@@ -162,11 +162,11 @@ Vite 已把 `/api` 代理到 `http://localhost:8000`（见 [vite.config.js](heri
 
 写在这里，是为了让后面接手（或者面试时被问到）的人不用重新踩一遍：
 
-1. **仓库里只有一份 `settings.py`，是开发配置**：`DEBUG = True`、`ALLOWED_HOSTS = ['*']`、`CORS_ALLOW_ALL_ORIGINS = True`。线上必须单独收紧，目前是靠部署时改代码，没有拆出 `settings_prod.py`。
+1. **只有一份 `settings.py`，靠环境变量区分环境**：不设 `DJANGO_DEBUG` 时默认 `DEBUG=False`；本地开发要在 `.env` 里显式写 `DJANGO_DEBUG=True`，否则 `runserver` 不再托管 media、也看不到错误堆栈。`ALLOWED_HOSTS`、`CORS_ALLOWED_ORIGINS`、`CSRF_TRUSTED_ORIGINS` 同样走环境变量，没有拆出 `settings_prod.py`。
 2. **敏感配置已全部改为读环境变量**：`DJANGO_SECRET_KEY`、`MYSQL_PASSWORD`、`SILICONFLOW_API_KEY` 都在 `.env` 里，仓库只提交 `.env.example`。
 3. **AI 对话有两条链路没统一**：后端 `ai` 模块提供 `/api/ai/chat/`，而前端 `ChatPanel.vue` 默认连的是 `VITE_CHAT_API_BASE_URL`（`localhost:3000`）上的另一个服务。
 4. **`heritage` / `activities` 两个 app 在本版本中已移除**，非遗页面的数据改为前端静态数据；`src/api/heritage.js`、`src/api/activities.js` 还在但已无对应后端接口。
-5. **媒体资源直接进 Git**（视频 + 全景图 + 内容图），是 clone 慢的主要原因。
+5. **媒体资源直接进 Git**（视频 + 全景图 + 内容图），是 clone 慢的主要原因。线上图片目前由 Django 兜底直出（`urls.py` 显式挂了 `serve`），因为前端是直连 `IP:8000` 取图；要提速得把前端改成走域名 + Nginx 直出。
 6. **后台管理页会渲染前台导航条**：`/admin` 路由没有与前台布局隔离，顶部会盖一层 Navbar。
 
 ---

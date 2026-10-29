@@ -75,6 +75,11 @@ vim .env
 ```ini
 DJANGO_SECRET_KEY=<随机长串>
 MYSQL_PASSWORD=<MySQL 密码>
+
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=你的域名,你的服务器IP
+DJANGO_CSRF_TRUSTED_ORIGINS=http://你的域名
+
 SILICONFLOW_API_KEY=<SiliconFlow 的 Key>
 SILICONFLOW_API_BASE_URL=https://api.siliconflow.cn/v1
 ```
@@ -172,9 +177,18 @@ cd ../heritage-tourism && npm install && npm run build
 
 ## 九、上线前必改
 
-代码里现在是开发配置，公网部署前务必处理（对应根 README 的「已知限制」第 1 条）：
+`settings.py` 已经全部改成读环境变量，不用改代码，只要把 `.env` 写对：
 
-- `DEBUG = True` → 关掉
-- `ALLOWED_HOSTS = ['*']` → 换成真实域名
-- `CORS_ALLOW_ALL_ORIGINS = True` → 白名单
+```ini
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=你的域名,你的服务器IP
+DJANGO_CSRF_TRUSTED_ORIGINS=http://你的域名
+```
+
+- `DJANGO_DEBUG` 不写也默认 `False`，但**本地开发必须显式写 `True`**
+- `ALLOWED_HOSTS` 默认已含 `hesitage.bhbigdata.com` 和 `124.221.146.174`，换域名要跟着改
+- `CORS_ALLOWED_ORIGINS` 留空则用 `settings.py` 里的白名单；`CORS_ALLOW_ALL_ORIGINS` 留空时跟着 `DEBUG` 走
+- `DEBUG=False` 后 runserver 不再托管静态文件，**必须先 `collectstatic`**，否则 `/admin/` 没样式
 - Django Admin 建议换非默认路径，或直接限制来源 IP
+
+改完 `.env` 需要重启服务才生效：`systemctl restart heritage-backend`

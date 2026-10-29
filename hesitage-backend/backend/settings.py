@@ -28,33 +28,61 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# 线上在 .env 里显式写 DJANGO_DEBUG=False；不写也默认 False，避免调试页被公网看到。
+# 本地开发请在 .env 里写 DJANGO_DEBUG=True，否则 runserver 不再托管 media、也看不到错误堆栈。
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('1', 'true', 'yes', 'on')
 
-ALLOWED_HOSTS = ['*']
+def env_list(name, default):
+    """读逗号分隔的环境变量；变量不存在或留空时回落到 default。
 
-# CORS设置
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "http://localhost:5175",
-    "http://127.0.0.1:5175",
-    "http://localhost:5176",
-    "http://127.0.0.1:5176",
-    "http://localhost:5177",
-    "http://127.0.0.1:5177",
-    "http://localhost:5178",
-    "http://127.0.0.1:5178",
-    "http://hesitage.bhbigdata.com",
-    "http://124.221.146.174",
-    "http://124.221.146.174:80",
-    "http://124.221.146.174:5173",
-    "http://124.221.146.174:8080",
-]
+    注意：.env 里写成 `KEY=` 时 os.environ 里就是空串，直接 .get(name, default)
+    会拿到空串而不是默认值，白名单会被清空——这里必须显式判空。
+    """
+    raw = os.environ.get(name, '').strip()
+    if not raw:
+        return list(default)
+    return [item.strip() for item in raw.split(',') if item.strip()]
 
-# 允许所有来源（开发环境，生产环境应关闭）
-CORS_ALLOW_ALL_ORIGINS = True
+
+# 线上 .env 写：DJANGO_ALLOWED_HOSTS=你的域名,你的服务器IP
+ALLOWED_HOSTS = env_list(
+    'DJANGO_ALLOWED_HOSTS',
+    [
+        'localhost', '127.0.0.1', '[::1]', 'testserver',
+        # 线上站点，写进默认值是为了「只关 DEBUG 也不会把站点打挂」
+        'hesitage.bhbigdata.com', '124.221.146.174',
+    ],
+)
+
+# CSRF 可信来源（Django 后台登录表单用）；线上 .env 写带 scheme 的完整地址
+CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS', [])
+
+# CORS设置：线上只认白名单，本地（DEBUG=True）默认放开
+CORS_ALLOWED_ORIGINS = env_list(
+    'CORS_ALLOWED_ORIGINS',
+    [
+        'http://localhost:5173', 'http://127.0.0.1:5173',
+        'http://localhost:5174', 'http://127.0.0.1:5174',
+        'http://localhost:5175', 'http://127.0.0.1:5175',
+        'http://localhost:5176', 'http://127.0.0.1:5176',
+        'http://localhost:5177', 'http://127.0.0.1:5177',
+        'http://localhost:5178', 'http://127.0.0.1:5178',
+        # 线上前端（页面从域名出来，接口打服务器 IP:8000，属于跨源）
+        'http://hesitage.bhbigdata.com',
+        'http://124.221.146.174',
+        'http://124.221.146.174:80',
+        'http://124.221.146.174:5173',
+        'http://124.221.146.174:8000',
+        'http://124.221.146.174:8080',
+    ],
+)
+
+# 留空 → 跟着 DEBUG 走（本地放开，线上只认白名单）
+_cors_all_raw = os.environ.get('CORS_ALLOW_ALL_ORIGINS', '').strip()
+CORS_ALLOW_ALL_ORIGINS = (
+    DEBUG if not _cors_all_raw
+    else _cors_all_raw.lower() in ('1', 'true', 'yes', 'on')
+)
 
 CORS_ALLOW_METHODS = [
     "GET",
@@ -183,10 +211,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+# collectstatic 的落盘目录，Nginx 的 /static/ 就指向这里
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files (uploaded by users)
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -223,3 +253,15 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
 }
+
+# ---- 生产加固：DEBUG=False 时自动生效 ----
+if not DEBUG:
+    # Nginx 已带上 X-Forwarded-Proto，将来接 HTTPS 时 Django 才知道原始协议
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+    X_FRAME_OPTIONS = 'DENY'
+    SESSION_COOKIE_HTTPONLY = True
+    # 站点目前跑在 HTTP 上，下面两项等上了 HTTPS 再打开，否则后台会登不进去
+    # SESSION_COOKIE_SECURE = True
+    # CSRF_COOKIE_SECURE = True
