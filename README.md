@@ -11,20 +11,14 @@
 
 <p align="center"><img src="docs/images/01-home.webp" width="100%" alt="首页"></p>
 
-<p align="center">
-  <img src="docs/images/02-heritage.webp" width="49%" alt="吉林遗珍 · 传承人画廊">
-  <img src="docs/images/03-tour.webp" width="49%" alt="文旅线路详情">
-</p>
+<p align="center"><img src="docs/images/02-cloud-workshop.webp" width="100%" alt="云工坊 · 满族剪纸与朝鲜族打糕"></p>
 
 <p align="center">
-  <img src="docs/images/04-panorama-chagan.webp" width="49%" alt="查干湖冬捕 360° 全景">
-  <img src="docs/images/05-panorama-papercut.webp" width="49%" alt="满族剪纸工坊 360° 全景">
+  <img src="docs/images/03-panorama-chagan.webp" width="49%" alt="查干湖冬捕 360° 全景">
+  <img src="docs/images/04-panorama-papercut.webp" width="49%" alt="满族剪纸工坊 360° 全景">
 </p>
 
-<p align="center">
-  <img src="docs/images/06-smart-tour.webp" width="49%" alt="智游吉林 · 线路推荐">
-  <img src="docs/images/07-admin.webp" width="49%" alt="后台管理 · 数据看板">
-</p>
+<p align="center"><img src="docs/images/05-admin.webp" width="100%" alt="后台管理 · 数据看板"></p>
 
 <sub>后台截图为演示数据；全景页右侧的传承人与乡宿推荐由内容库联动。</sub>
 
