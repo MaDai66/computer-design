@@ -1,0 +1,37 @@
+# ---- Python / Django ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+staticfiles/
+
+# ---- 本地配置与密钥 ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Node / Vite ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- 编辑器 / 系统 ----
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- 日志与临时文件 ----
+*.log
+logs/

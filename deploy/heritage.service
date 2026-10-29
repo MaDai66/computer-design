@@ -1,0 +1,22 @@
+[Unit]
+Description=HeritageJourney Django Backend (Gunicorn)
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/heritage/backend
+Environment="DJANGO_SETTINGS_MODULE=backend.settings_prod"
+# 可选：把 DJANGO_SECRET_KEY 等敏感配置写进这个文件，不要写进代码
+EnvironmentFile=-/var/www/heritage/backend/.env
+ExecStart=/var/www/heritage/backend/venv/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:8000 \
+    --access-logfile - \
+    --error-logfile - \
+    backend.wsgi:application
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
