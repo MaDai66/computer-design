@@ -160,8 +160,6 @@ Vite 已把 `/api` 代理到 `http://localhost:8000`（见 [vite.config.js](heri
 
 ## 已知限制
 
-写在这里，是为了让后面接手（或者面试时被问到）的人不用重新踩一遍：
-
 1. **只有一份 `settings.py`，靠环境变量区分环境**：不设 `DJANGO_DEBUG` 时默认 `DEBUG=False`；本地开发要在 `.env` 里显式写 `DJANGO_DEBUG=True`，否则 `runserver` 不再托管 media、也看不到错误堆栈。`ALLOWED_HOSTS`、`CORS_ALLOWED_ORIGINS`、`CSRF_TRUSTED_ORIGINS` 同样走环境变量，没有拆出 `settings_prod.py`。
 2. **敏感配置已全部改为读环境变量**：`DJANGO_SECRET_KEY`、`MYSQL_PASSWORD`、`SILICONFLOW_API_KEY` 都在 `.env` 里，仓库只提交 `.env.example`。
 3. **AI 对话有两条链路没统一**：后端 `ai` 模块提供 `/api/ai/chat/`，而前端 `ChatPanel.vue` 默认连的是 `VITE_CHAT_API_BASE_URL`（`localhost:3000`）上的另一个服务。
